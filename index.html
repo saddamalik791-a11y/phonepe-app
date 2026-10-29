@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhonePe App</title>
+  <title>PhonePe Live Pay</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- jsQR Library for scanning QR using device camera -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -16,12 +18,11 @@
     }
 
     body {
-      background-color: #f6f7fb;
+      background-color: #f5f6fa;
       color: #333;
-      padding-bottom: 30px;
+      padding-bottom: 40px;
     }
 
-    /* Header */
     .header {
       background: #5f259f;
       color: white;
@@ -41,11 +42,11 @@
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
+      font-weight: 700;
       border: 1.5px solid #fff;
     }
 
@@ -61,12 +62,12 @@
 
     .badge {
       background: rgba(255, 255, 255, 0.2);
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 14px;
       font-size: 11px;
+      font-weight: 600;
     }
 
-    /* Container */
     .container {
       padding: 16px;
       display: flex;
@@ -74,13 +75,12 @@
       gap: 16px;
     }
 
-    /* Wallet Card */
     .wallet-card {
       background: linear-gradient(135deg, #6739b7, #512da8);
-      border-radius: 16px;
-      padding: 18px;
+      border-radius: 18px;
+      padding: 20px;
       color: white;
-      box-shadow: 0 4px 12px rgba(95, 37, 159, 0.2);
+      box-shadow: 0 4px 15px rgba(95, 37, 159, 0.25);
     }
 
     .wallet-title {
@@ -89,17 +89,16 @@
     }
 
     .wallet-balance {
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 700;
-      margin: 6px 0;
+      margin: 8px 0;
     }
 
     .upi-id {
       font-size: 12px;
-      opacity: 0.8;
+      opacity: 0.85;
     }
 
-    /* Section Headings */
     .section-title {
       font-size: 14px;
       font-weight: 600;
@@ -107,7 +106,6 @@
       margin-bottom: 10px;
     }
 
-    /* Action Grid */
     .action-grid {
       background: white;
       border-radius: 16px;
@@ -151,28 +149,26 @@
       font-weight: 500;
     }
 
-    /* Scan Pay Bar */
     .scan-btn {
       background: #5f259f;
       color: white;
       border: none;
       border-radius: 14px;
-      padding: 14px;
-      font-size: 15px;
+      padding: 15px;
+      font-size: 16px;
       font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(95, 37, 159, 0.25);
+      box-shadow: 0 4px 12px rgba(95, 37, 159, 0.25);
     }
 
     .scan-btn:active {
       transform: scale(0.98);
     }
 
-    /* History List */
     .history-card {
       background: white;
       border-radius: 16px;
@@ -201,7 +197,7 @@
     .txn-time {
       font-size: 11px;
       color: #888;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     .txn-amount {
@@ -217,16 +213,16 @@
       color: #e53935;
     }
 
-    /* Modal Popups */
+    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.7);
       align-items: center;
       justify-content: center;
       padding: 20px;
-      z-index: 999;
+      z-index: 1000;
     }
 
     .modal-content {
@@ -234,29 +230,35 @@
       border-radius: 20px;
       padding: 20px;
       width: 100%;
-      max-width: 340px;
-      text-align: center;
+      max-width: 360px;
+      box-sizing: border-box;
+      position: relative;
     }
 
     .modal-content h3 {
       font-size: 17px;
       color: #5f259f;
-      margin-bottom: 14px;
+      margin-bottom: 15px;
+      text-align: center;
     }
 
     .modal-input {
       width: 100%;
       padding: 12px;
-      border: 1px solid #ccc;
+      border: 1px solid #d5d5d5;
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 14px;
       margin-bottom: 12px;
       outline: none;
     }
 
+    .modal-input:focus {
+      border-color: #5f259f;
+    }
+
     .modal-btn {
       width: 100%;
-      padding: 12px;
+      padding: 13px;
       background: #5f259f;
       color: white;
       border: none;
@@ -268,8 +270,125 @@
     }
 
     .modal-close {
-      background: #eee;
+      background: #ececec;
+      color: #444;
+    }
+
+    /* Camera Scanner Screen */
+    #scannerContainer {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    #video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .scan-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 160px;
+      height: 160px;
+      border: 2px dashed #0fa958;
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+    }
+
+    /* Success Receipt Screen */
+    #successScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0fa958;
+      color: white;
+      z-index: 2000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .success-circle {
+      width: 90px;
+      height: 90px;
+      background: white;
+      color: #0fa958;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 45px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      animation: pop 0.3s ease-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .receipt-box {
+      background: white;
       color: #333;
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 20px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+      text-align: left;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .receipt-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .receipt-row .label {
+      color: #777;
+    }
+
+    .receipt-row .val {
+      font-weight: 600;
+      color: #222;
+    }
+
+    .done-btn {
+      margin-top: 24px;
+      background: white;
+      color: #0fa958;
+      border: none;
+      padding: 12px 35px;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
   </style>
 </head>
@@ -288,7 +407,7 @@
   </div>
 
   <div class="container">
-    <!-- Balance Card -->
+    <!-- Wallet Balance -->
     <div class="wallet-card">
       <div class="wallet-title">Total Wallet Balance</div>
       <div class="wallet-balance" id="walletBal">₹50,000.00</div>
@@ -299,27 +418,27 @@
     <div>
       <div class="section-title">Transfer Money</div>
       <div class="action-grid">
-        <div class="action-item" onclick="openPayModal('Mobile Number')">
+        <div class="action-item" onclick="openManualPay('Mobile Number')">
           <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
           <span class="action-label">To Mobile Number</span>
         </div>
-        <div class="action-item" onclick="openPayModal('Bank / Self')">
+        <div class="action-item" onclick="openManualPay('Bank Account')">
           <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
           <span class="action-label">To Bank & Self A/c</span>
         </div>
-        <div class="action-item" onclick="openScanner()">
+        <div class="action-item" onclick="startCameraScanner()">
           <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
           <span class="action-label">Scan Any QR Code</span>
         </div>
-        <div class="action-item" onclick="checkBalance()">
+        <div class="action-item" onclick="checkBalanceAlert()">
           <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
           <span class="action-label">Check Balance</span>
         </div>
       </div>
     </div>
 
-    <!-- Scan Bar -->
-    <button class="scan-btn" onclick="openScanner()">
+    <!-- Live Scanner Button -->
+    <button class="scan-btn" onclick="startCameraScanner()">
       <i class="fa-solid fa-camera"></i> Scan & Pay Any QR
     </button>
 
@@ -329,8 +448,8 @@
       <div class="history-card" id="historyList">
         <div class="txn-item">
           <div>
-            <div class="txn-title">Received from Merchant Store</div>
-            <div class="txn-time">State Bank • Today, 12:40 PM</div>
+            <div class="txn-title">Merchant Cash-In</div>
+            <div class="txn-time">State Bank • Initial Load</div>
           </div>
           <div class="txn-amount txn-green">+₹500.00</div>
         </div>
@@ -338,56 +457,232 @@
     </div>
   </div>
 
-  <!-- Send Money Modal -->
-  <div class="modal" id="payModal">
+  <!-- Real Camera QR Scanner Modal -->
+  <div class="modal" id="scannerModal">
     <div class="modal-content">
-      <h3 id="modalTitle">Send Money</h3>
-      <input type="text" id="targetInput" class="modal-input" placeholder="Enter recipient info">
-      <input type="number" id="amountInput" class="modal-input" placeholder="Enter Amount (₹)">
-      <button class="modal-btn" onclick="processPayment()">Send Payment</button>
-      <button class="modal-btn modal-close" onclick="closeModal('payModal')">Cancel</button>
+      <h3>Live Camera QR Scanner</h3>
+      <div id="scannerContainer">
+        <video id="video" playsinline></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <div class="scan-overlay"></div>
+      </div>
+      <p style="font-size: 12px; color: #666; text-align: center; margin-bottom: 12px;">ক্যামেরাটি কিউআর কোডের সামনে সোজা রাখুন</p>
+      <button class="modal-btn modal-close" onclick="stopCameraScanner()">Cancel</button>
     </div>
   </div>
 
-  <!-- QR Scan Modal -->
-  <div class="modal" id="scanModal">
+  <!-- Payment Form Modal -->
+  <div class="modal" id="paymentModal">
     <div class="modal-content">
-      <h3>Scanner Simulator</h3>
-      <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Scanning camera view...</p>
-      <input type="number" id="scanAmount" class="modal-input" placeholder="Amount to pay on scanned QR">
-      <button class="modal-btn" onclick="processQRScan()">Pay Scanned QR</button>
-      <button class="modal-btn modal-close" onclick="closeModal('scanModal')">Close</button>
+      <h3 id="payModalTitle">Pay Money</h3>
+      <label style="font-size: 12px; color: #555; margin-bottom: 4px; display:block;">Recipient Details</label>
+      <input type="text" id="payeeDetails" class="modal-input" placeholder="Name or UPI ID">
+      
+      <label style="font-size: 12px; color: #555; margin-bottom: 4px; display:block;">Amount (₹)</label>
+      <input type="number" id="payAmount" class="modal-input" placeholder="₹ Enter Amount" min="1">
+      
+      <button class="modal-btn" onclick="executeTransaction()">Proceed to Pay</button>
+      <button class="modal-btn modal-close" onclick="closeModal('paymentModal')">Cancel</button>
     </div>
+  </div>
+
+  <!-- Fullscreen Success Receipt -->
+  <div id="successScreen">
+    <div class="success-circle">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Payment Successful</h2>
+    <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 8px;" id="receiptAmount">₹0.00</h1>
+    <p style="font-size: 14px; opacity: 0.9;" id="receiptPayee">Paid to Merchant</p>
+
+    <div class="receipt-box">
+      <div class="receipt-row">
+        <span class="label">Transaction ID</span>
+        <span class="val" id="receiptTxnId">T26102923...</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">Debited From</span>
+        <span class="val">State Bank (•••• 5424)</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">Time</span>
+        <span class="val" id="receiptTime">Just now</span>
+      </div>
+    </div>
+
+    <button class="done-btn" onclick="closeSuccessScreen()">Done</button>
   </div>
 
   <script>
     let currentBalance = parseFloat(localStorage.getItem('balance')) || 50000.00;
+    let videoStream = null;
+    let scanningActive = false;
 
-    function updateBalanceDisplay() {
+    // Web Audio API for Success Beep Sound
+    function playSuccessTone() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.setValueAtTime(880.00, audioCtx.currentTime + 0.12); // A5
+
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.45);
+      } catch (e) {
+        console.log("Audio not supported:", e);
+      }
+    }
+
+    function updateBalanceUI() {
       document.getElementById('walletBal').innerText = '₹' + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
       localStorage.setItem('balance', currentBalance);
     }
 
-    function checkBalance() {
-      alert("State Bank •••• 5424\nAvailable Balance: ₹" + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
+    function checkBalanceAlert() {
+      alert("State Bank of India •••• 5424\nAvailable Balance: ₹" + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
     }
 
-    function openPayModal(type) {
-      document.getElementById('modalTitle').innerText = 'Send via ' + type;
-      document.getElementById('targetInput').placeholder = type === 'Mobile Number' ? 'Enter Mobile Number' : 'Enter Bank Account / UPI ID';
-      document.getElementById('payModal').style.display = 'flex';
-    }
-
-    function openScanner() {
-      document.getElementById('scanModal').style.display = 'flex';
+    function openManualPay(type) {
+      document.getElementById('payModalTitle').innerText = 'Transfer to ' + type;
+      document.getElementById('payeeDetails').value = '';
+      document.getElementById('payeeDetails').placeholder = type === 'Mobile Number' ? 'Enter Mobile Number' : 'Enter Bank Account / UPI';
+      document.getElementById('payAmount').value = '';
+      document.getElementById('paymentModal').style.display = 'flex';
     }
 
     function closeModal(id) {
       document.getElementById(id).style.display = 'none';
     }
 
-    function addTransaction(title, amount) {
-      const historyList = document.getElementById('historyList');
+    // Camera QR Code Scanner Logic
+    async function startCameraScanner() {
+      const modal = document.getElementById('scannerModal');
+      const video = document.getElementById('video');
+      modal.style.display = 'flex';
+
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: "environment" } 
+        });
+        video.srcObject = videoStream;
+        video.setAttribute("playsinline", true);
+        video.play();
+        scanningActive = true;
+        requestAnimationFrame(scanQRCodeTick);
+      } catch (err) {
+        alert("ক্যামেরা অন করা যাচ্ছে না। ব্রাউজারে ক্যামেরার পারমিশন (Allow) দিন।");
+        stopCameraScanner();
+      }
+    }
+
+    function scanQRCodeTick() {
+      if (!scanningActive) return;
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+
+        if (code) {
+          // QR Code Found
+          scanningActive = false;
+          stopCameraScanner();
+          handleScannedData(code.data);
+          return;
+        }
+      }
+      requestAnimationFrame(scanQRCodeTick);
+    }
+
+    function stopCameraScanner() {
+      scanningActive = false;
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+      }
+      closeModal('scannerModal');
+    }
+
+    // Parse UPI QR format: upi://pay?pa=...&pn=...&am=...
+    function handleScannedData(qrString) {
+      let payee = "Scanned Merchant";
+      let amount = "";
+
+      if (qrString.startsWith("upi://pay")) {
+        try {
+          const urlParams = new URLSearchParams(qrString.replace("upi://pay?", ""));
+          const pn = urlParams.get('pn');
+          const pa = urlParams.get('pa');
+          const am = urlParams.get('am');
+
+          payee = pn ? decodeURIComponent(pn) : (pa || payee);
+          if (am) amount = am;
+        } catch (e) {
+          payee = qrString;
+        }
+      } else {
+        payee = qrString.length > 30 ? qrString.substring(0, 30) + '...' : qrString;
+      }
+
+      document.getElementById('payModalTitle').innerText = 'Pay Scanned QR';
+      document.getElementById('payeeDetails').value = payee;
+      document.getElementById('payAmount').value = amount;
+      document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    // Execute Transaction
+    function executeTransaction() {
+      const payee = document.getElementById('payeeDetails').value.trim();
+      const amount = parseFloat(document.getElementById('payAmount').value);
+
+      if (!payee) {
+        alert("দয়া করে নাম বা UPI ID লিখুন");
+        return;
+      }
+      if (isNaN(amount) || amount <= 0) {
+        alert("সঠিক টাকার পরিমাণ লিখুন");
+        return;
+      }
+      if (amount > currentBalance) {
+        alert("আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই!");
+        return;
+      }
+
+      // Deduct balance
+      currentBalance -= amount;
+      updateBalanceUI();
+
+      // Close input modal
+      closeModal('paymentModal');
+
+      // Add to transaction history
+      addTransactionRecord(payee, amount);
+
+      // Play PhonePe Success Tone
+      playSuccessTone();
+
+      // Show Fullscreen Green Receipt
+      showReceiptScreen(payee, amount);
+    }
+
+    function addTransactionRecord(payee, amount) {
+      const list = document.getElementById('historyList');
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -395,63 +690,31 @@
       item.className = 'txn-item';
       item.innerHTML = `
         <div>
-          <div class="txn-title">${title}</div>
+          <div class="txn-title">Paid to ${payee}</div>
           <div class="txn-time">State Bank • Today, ${timeStr}</div>
         </div>
         <div class="txn-amount txn-red">-₹${amount.toFixed(2)}</div>
       `;
-      historyList.prepend(item);
+      list.prepend(item);
     }
 
-    function processPayment() {
-      const amount = parseFloat(document.getElementById('amountInput').value);
-      const target = document.getElementById('targetInput').value;
+    function showReceiptScreen(payee, amount) {
+      document.getElementById('receiptAmount').innerText = '₹' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('receiptPayee').innerText = 'Paid to ' + payee;
+      document.getElementById('receiptTxnId').innerText = 'T' + Math.floor(100000000000 + Math.random() * 900000000000);
+      
+      const now = new Date();
+      document.getElementById('receiptTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      if (!target) {
-        alert('Please enter recipient detail!');
-        return;
-      }
-      if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid amount!');
-        return;
-      }
-      if (amount > currentBalance) {
-        alert('Insufficient wallet balance!');
-        return;
-      }
-
-      currentBalance -= amount;
-      updateBalanceDisplay();
-      addTransaction('Paid to ' + target, amount);
-
-      document.getElementById('amountInput').value = '';
-      document.getElementById('targetInput').value = '';
-      closeModal('payModal');
-      alert('Payment Successful!');
+      document.getElementById('successScreen').style.display = 'flex';
     }
 
-    function processQRScan() {
-      const amount = parseFloat(document.getElementById('scanAmount').value);
-      if (isNaN(amount) || amount <= 0) {
-        alert('Please enter valid amount!');
-        return;
-      }
-      if (amount > currentBalance) {
-        alert('Insufficient balance!');
-        return;
-      }
-
-      currentBalance -= amount;
-      updateBalanceDisplay();
-      addTransaction('Paid to QR Merchant', amount);
-
-      document.getElementById('scanAmount').value = '';
-      closeModal('scanModal');
-      alert('QR Payment Successful!');
+    function closeSuccessScreen() {
+      document.getElementById('successScreen').style.display = 'none';
     }
 
-    // Initialize balance
-    updateBalanceDisplay();
+    // Initialize balance on first load
+    updateBalanceUI();
   </script>
 </body>
 </html>
