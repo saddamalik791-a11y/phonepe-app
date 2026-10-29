@@ -2,567 +2,456 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PhonePe Live UPI Payment</title>
-  
-  <!-- jsQR Engine for Live Scanning -->
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-
-  <!-- Firebase Realtime Engine -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhonePe App</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
-    
-    body {
-      background-color: #0b0716;
-      color: #333;
-      display: flex;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden; 
-    }
 
-    .mobile-wrapper {
-      width: 100%;
-      max-width: 420px;
-      background-color: #f4f4f6;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      position: relative;
+    body {
+      background-color: #f6f7fb;
+      color: #333;
+      padding-bottom: 30px;
     }
 
     /* Header */
-    .app-header {
-      background-color: #5f259f;
-      color: #fff;
-      padding: 14px 16px;
+    .header {
+      background: #5f259f;
+      color: white;
+      padding: 18px 16px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom-left-radius: 18px;
-      border-bottom-right-radius: 18px;
-    }
-    .profile-area { display: flex; align-items: center; gap: 12px; }
-    
-    .avatar {
-      width: 44px; height: 44px;
-      background: #7d3ec9;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 600; font-size: 14px; color: #fff;
-      cursor: pointer;
     }
 
-    .user-info .name { font-size: 14px; font-weight: 600; }
-    .user-info .acc { font-size: 12px; opacity: 0.85; margin-top: 2px; }
-    .cloud-badge {
-      font-size: 11px;
-      background: rgba(255,255,255,0.2);
-      padding: 4px 10px;
-      border-radius: 12px;
+    .profile-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border: 1.5px solid #fff;
+    }
+
+    .user-info h4 {
+      font-size: 15px;
       font-weight: 600;
     }
 
-    /* Balance Card */
-    .balance-card {
-      background: linear-gradient(135deg, #5f259f, #7b32c9);
-      color: #fff;
-      margin: 14px 16px;
-      padding: 18px;
-      border-radius: 16px;
-      box-shadow: 0 6px 18px rgba(95, 37, 159, 0.25);
+    .user-info p {
+      font-size: 12px;
+      opacity: 0.85;
     }
-    .balance-title { font-size: 13px; opacity: 0.85; margin-bottom: 6px;}
-    .balance-amount { font-size: 26px; font-weight: bold; margin-bottom: 8px; }
-    .upi-id { font-size: 12px; opacity: 0.9;}
 
-    /* Action Grid */
-    .section-title { font-size: 14px; font-weight: 600; color: #555; margin: 0 16px 10px 16px;}
-    .action-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin: 0 16px 16px 16px;
-      background: #fff;
-      padding: 14px 8px;
+    .badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 10px;
       border-radius: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-    .grid-item {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 8px; cursor: pointer;
-    }
-    .grid-item:active { opacity: 0.6; }
-    
-    .icon-box {
-      width: 48px; height: 48px;
-      background: #5f259f;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 3px 8px rgba(95, 37, 159, 0.2);
-      pointer-events: none;
-    }
-    .icon-box svg { width: 24px; height: 24px; fill: #ffffff; }
-    .grid-item span { 
-      font-size: 11px; 
-      font-weight: 500; 
-      color: #333;
-      text-align: center;
-      line-height: 1.2;
-      pointer-events: none;
+      font-size: 11px;
     }
 
-    /* Scan Bar */
-    .scan-btn-container { padding: 0 16px; margin-bottom: 16px; }
-    .scan-btn {
-      width: 100%; padding: 14px;
-      background: #5f259f; color: #fff;
-      border: none; border-radius: 12px;
-      font-size: 15px; font-weight: 600;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(95, 37, 159, 0.25);
-    }
-    .scan-btn:active { background: #4a1c7d; }
-
-    /* Recent Transactions */
-    .tx-list {
-      background: #fff;
-      margin: 0 16px;
-      border-radius: 14px;
-      padding: 0 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      overflow-y: auto;
-      flex-grow: 1;
-      padding-bottom: 20px;
-    }
-    .tx-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .tx-item:last-child { border-bottom: none; }
-    .tx-details { display: flex; flex-direction: column; gap: 4px; }
-    .tx-name { font-size: 14px; font-weight: 600; color: #222;}
-    .tx-time { font-size: 11px; color: #888;}
-    
-    .tx-amount { 
-      font-size: 15px; 
-      font-weight: 700; 
-      color: #2e7d32 !important; 
-    }
-
-    /* Modals Control */
-    .modal-hidden { display: none !important; }
-    
-    .popup-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .popup-box {
-      background: #fff;
-      width: 88%;
-      border-radius: 20px;
-      padding: 22px 18px;
-      text-align: center;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    }
-
-    .success-icon {
-      width: 60px; height: 60px;
-      background: #2ecc71;
-      border-radius: 50%;
-      display: flex; justify-content: center; align-items: center;
-      margin: 0 auto 12px auto;
-      color: white; font-size: 30px;
-    }
-    .popup-title { font-size: 18px; font-weight: bold; color: #2ecc71; margin-bottom: 6px;}
-    .popup-amount { font-size: 28px; font-weight: bold; color: #111; margin-bottom: 6px;}
-    .popup-receiver { font-size: 14px; color: #222; font-weight: 600; margin-bottom: 4px;}
-    .popup-sub-details { font-size: 12px; color: #666; margin-bottom: 12px; }
-    .popup-txn-id { font-size: 11px; color: #444; margin-bottom: 16px; background: #f0f0f0; padding: 6px 10px; border-radius: 8px; display: inline-block;}
-
-    .input-group { margin-bottom: 12px; text-align: left;}
-    .input-group label { font-size: 12px; color: #555; margin-bottom: 5px; display: block; font-weight: 600;}
-    .input-group input {
-      width: 100%; padding: 11px;
-      border: 1px solid #ccc; border-radius: 8px;
-      font-size: 14px; outline: none; background: #fafafa;
-    }
-    .input-group input:focus { border-color: #5f259f; background: #fff;}
-
-    .close-btn {
-      width: 100%;
-      background: #5f259f; color: #fff;
-      border: none; border-radius: 10px;
-      padding: 12px; font-size: 14px; font-weight: 600;
-      cursor: pointer;
-    }
-    .close-btn:active { background: #4a1c7d; }
-    .btn-cancel { background: #e0e0e0; color: #333; margin-top: 8px; }
-
-    /* Live Camera Screen */
-    .camera-screen {
-      position: absolute;
-      inset: 0;
-      background: #000;
-      z-index: 2000;
+    /* Container */
+    .container {
+      padding: 16px;
       display: flex;
       flex-direction: column;
+      gap: 16px;
     }
-    .cam-header {
-      padding: 16px;
+
+    /* Wallet Card */
+    .wallet-card {
+      background: linear-gradient(135deg, #6739b7, #512da8);
+      border-radius: 16px;
+      padding: 18px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(95, 37, 159, 0.2);
+    }
+
+    .wallet-title {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .wallet-balance {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 6px 0;
+    }
+
+    .upi-id {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    /* Section Headings */
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    /* Action Grid */
+    .action-grid {
+      background: white;
+      border-radius: 16px;
+      padding: 16px 8px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .action-icon {
+      width: 48px;
+      height: 48px;
+      background: #5f259f;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 8px;
+      transition: transform 0.1s;
+    }
+
+    .action-item:active .action-icon {
+      transform: scale(0.92);
+    }
+
+    .action-label {
+      font-size: 11px;
+      line-height: 1.2;
+      color: #444;
+      font-weight: 500;
+    }
+
+    /* Scan Pay Bar */
+    .scan-btn {
+      background: #5f259f;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(95, 37, 159, 0.25);
+    }
+
+    .scan-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* History List */
+    .history-card {
+      background: white;
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .txn-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #fff;
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      z-index: 10;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
     }
-    .cam-close {
-      background: rgba(255,255,255,0.3);
-      border: none; color: #fff;
-      width: 36px; height: 36px;
-      border-radius: 50%; font-size: 18px;
+
+    .txn-item:last-child {
+      border-bottom: none;
+    }
+
+    .txn-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .txn-time {
+      font-size: 11px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .txn-amount {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .txn-green {
+      color: #0fa958;
+    }
+
+    .txn-red {
+      color: #e53935;
+    }
+
+    /* Modal Popups */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+    }
+
+    .modal-content h3 {
+      font-size: 17px;
+      color: #5f259f;
+      margin-bottom: 14px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 12px;
+      background: #5f259f;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
+      margin-bottom: 8px;
     }
-    .cam-viewport {
-      width: 100%; height: 100%;
-      position: relative;
-      display: flex; justify-content: center; align-items: center;
-      overflow: hidden;
-    }
-    #scannerVideo { width: 100%; height: 100%; object-fit: cover; }
-    .cam-target-box {
-      position: absolute;
-      width: 240px; height: 240px;
-      border: 2px solid rgba(255,255,255,0.5);
-      border-radius: 18px;
-      box-shadow: 0 0 0 3000px rgba(0,0,0,0.6);
-      display: flex; justify-content: center; align-items: center;
-    }
-    .cam-laser {
-      width: 100%; height: 3px;
-      background: #2ecc71;
-      box-shadow: 0 0 10px #2ecc71;
-      position: absolute;
-      animation: laserMove 2s infinite ease-in-out;
-    }
-    @keyframes laserMove {
-      0% { top: 2%; }
-      50% { top: 96%; }
-      100% { top: 2%; }
-    }
-    .cam-bottom {
-      position: absolute; bottom: 24px; left: 0; right: 0;
-      display: flex; justify-content: center; z-index: 10;
-    }
-    .btn-gallery {
-      background: rgba(255,255,255,0.3);
-      color: #fff; border: 1px solid rgba(255,255,255,0.6);
-      padding: 10px 22px; border-radius: 20px; font-size: 13px;
-      cursor: pointer;
+
+    .modal-close {
+      background: #eee;
+      color: #333;
     }
   </style>
 </head>
 <body>
 
-  <div class="mobile-wrapper">
-    
-    <!-- Header -->
-    <div class="app-header">
-      <div class="profile-area">
-        <div class="avatar" onclick="openInputPopup('Direct Add')">SA</div>
-        <div class="user-info">
-          <div class="name">Saving Account</div>
-          <div class="acc">State Bank •••• 5424</div>
-        </div>
-      </div>
-      <div class="header-icons">
-        <span class="cloud-badge">Live Sync</span>
+  <!-- Header -->
+  <div class="header">
+    <div class="profile-section">
+      <div class="avatar">SA</div>
+      <div class="user-info">
+        <h4>Saving Account</h4>
+        <p>State Bank •••• 5424</p>
       </div>
     </div>
+    <div class="badge">Live Sync</div>
+  </div>
 
+  <div class="container">
     <!-- Balance Card -->
-    <div class="balance-card">
-      <div class="balance-title">Total Wallet Balance</div>
-      <div class="balance-amount" id="balanceText">₹50,000.00</div>
+    <div class="wallet-card">
+      <div class="wallet-title">Total Wallet Balance</div>
+      <div class="wallet-balance" id="walletBal">₹50,000.00</div>
       <div class="upi-id">UPI ID: saddam424@ybl</div>
     </div>
 
-    <!-- Action Grid -->
-    <div class="section-title">Transfer Money</div>
-    <div class="action-grid">
-      <div class="grid-item" onclick="openInputPopup('Mobile Number')">
-        <div class="icon-box">
-          <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+    <!-- Actions -->
+    <div>
+      <div class="section-title">Transfer Money</div>
+      <div class="action-grid">
+        <div class="action-item" onclick="openPayModal('Mobile Number')">
+          <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+          <span class="action-label">To Mobile Number</span>
         </div>
-        <span>To Mobile<br>Number</span>
-      </div>
-
-      <div class="grid-item" onclick="openInputPopup('Bank Account')">
-        <div class="icon-box">
-          <svg viewBox="0 0 24 24"><path d="M4 9h16v2H4zm2 3h2v6H6zm5 0h2v6h-2zm5 0h2v6h-2zM2 21h20v2H2zm10-18L2 7v1h20V7z"/></svg>
+        <div class="action-item" onclick="openPayModal('Bank / Self')">
+          <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
+          <span class="action-label">To Bank & Self A/c</span>
         </div>
-        <span>To Bank &<br>Self A/c</span>
-      </div>
-
-      <div class="grid-item" onclick="startCameraScanner()">
-        <div class="icon-box">
-          <svg viewBox="0 0 24 24"><path d="M3 5v4h2V5h4V3H5c-1.1 0-2 .9-2 2zm2 10H3v4c0 1.1.9 2 2 2h4v-2H5v-4zm14 4h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zm0-16h-4v2h4v4h2V5c0-1.1-.9-2-2-2zM7 7h4v4H7zm6 0h4v4h-4zm-6 6h4v4H7zm8 2h2v2h-2z"/></svg>
+        <div class="action-item" onclick="openScanner()">
+          <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
+          <span class="action-label">Scan Any QR Code</span>
         </div>
-        <span>Scan Any<br>QR Code</span>
-      </div>
-
-      <div class="grid-item" onclick="showCheckBalance()">
-        <div class="icon-box">
-          <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="#fff"/><text x="12" y="15" font-size="11" font-weight="bold" fill="#5f259f" text-anchor="middle">₹</text></svg>
+        <div class="action-item" onclick="checkBalance()">
+          <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <span class="action-label">Check Balance</span>
         </div>
-        <span>Check<br>Balance</span>
       </div>
     </div>
 
     <!-- Scan Bar -->
-    <div class="scan-btn-container">
-      <button class="scan-btn" onclick="startCameraScanner()">
-        <span>📷</span> Scan & Pay Any QR
-      </button>
-    </div>
+    <button class="scan-btn" onclick="openScanner()">
+      <i class="fa-solid fa-camera"></i> Scan & Pay Any QR
+    </button>
 
-    <!-- Recent Transactions -->
-    <div class="section-title">Recent Transactions</div>
-    <div class="tx-list" id="historyList">
-      <div class="tx-item">
-        <div class="tx-details">
-          <div class="tx-name">Received from Merchant Store</div>
-          <div class="tx-time">State Bank • Today, 12:40 PM</div>
-        </div>
-        <div class="tx-amount">+₹500.00</div>
-      </div>
-    </div>
-
-    <!-- Live Camera Scanner Screen -->
-    <div class="camera-screen modal-hidden" id="cameraScreen">
-      <div class="cam-header">
-        <span style="font-weight: 600;">Scan QR Code</span>
-        <button class="cam-close" onclick="stopCameraScanner()">✕</button>
-      </div>
-      <div class="cam-viewport">
-        <video id="scannerVideo" playsinline></video>
-        <div class="cam-target-box">
-          <div class="cam-laser"></div>
+    <!-- History -->
+    <div>
+      <div class="section-title">Recent Transactions</div>
+      <div class="history-card" id="historyList">
+        <div class="txn-item">
+          <div>
+            <div class="txn-title">Received from Merchant Store</div>
+            <div class="txn-time">State Bank • Today, 12:40 PM</div>
+          </div>
+          <div class="txn-amount txn-green">+₹500.00</div>
         </div>
       </div>
-      <div class="cam-bottom">
-        <button class="btn-gallery" onclick="document.getElementById('galleryInput').click()">🖼️ Choose from Gallery</button>
-        <input type="file" id="galleryInput" accept="image/*" style="display: none;" onchange="processGalleryImage(this)">
-      </div>
     </div>
+  </div>
 
-    <!-- Input Form Modal -->
-    <div class="popup-overlay modal-hidden" id="inputPopup">
-      <div class="popup-box">
-        <h3 style="margin-bottom: 14px; color: #333;" id="inputTitle">Transfer Money</h3>
-        <div class="input-group">
-          <label>Receiver Name</label>
-          <input type="text" id="targetName" placeholder="e.g. MerchantName">
-        </div>
-        <div class="input-group">
-          <label id="inputLabel">Mobile / UPI ID</label>
-          <input type="text" id="targetInput" placeholder="e.g. merchant@bank">
-        </div>
-        <div class="input-group">
-          <label>Amount (₹)</label>
-          <input type="number" id="targetAmount" placeholder="e.g. 100">
-        </div>
-        <button class="close-btn" onclick="submitInput()">Credit / Add Money (+)</button>
-        <button class="close-btn btn-cancel" onclick="closePopup('inputPopup')">Cancel</button>
-      </div>
+  <!-- Send Money Modal -->
+  <div class="modal" id="payModal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Send Money</h3>
+      <input type="text" id="targetInput" class="modal-input" placeholder="Enter recipient info">
+      <input type="number" id="amountInput" class="modal-input" placeholder="Enter Amount (₹)">
+      <button class="modal-btn" onclick="processPayment()">Send Payment</button>
+      <button class="modal-btn modal-close" onclick="closeModal('payModal')">Cancel</button>
     </div>
+  </div>
 
-    <!-- Success Modal -->
-    <div class="popup-overlay modal-hidden" id="successPopup">
-      <div class="popup-box">
-        <div class="success-icon">✓</div>
-        <div class="popup-title">Payment Successful!</div>
-        <div class="popup-amount" id="popAmt">+₹0.00</div>
-        <div class="popup-receiver" id="popReceiver">Received from: Merchant</div>
-        <div class="popup-sub-details" id="popSubDetails">+91 0000000000</div>
-        <div class="popup-txn-id" id="popTxnId">Transaction ID: T000000000</div>
-        <button class="close-btn" onclick="closePopup('successPopup')">Done</button>
-      </div>
+  <!-- QR Scan Modal -->
+  <div class="modal" id="scanModal">
+    <div class="modal-content">
+      <h3>Scanner Simulator</h3>
+      <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Scanning camera view...</p>
+      <input type="number" id="scanAmount" class="modal-input" placeholder="Amount to pay on scanned QR">
+      <button class="modal-btn" onclick="processQRScan()">Pay Scanned QR</button>
+      <button class="modal-btn modal-close" onclick="closeModal('scanModal')">Close</button>
     </div>
-
-    <!-- Balance Modal -->
-    <div class="popup-overlay modal-hidden" id="balancePopup">
-      <div class="popup-box">
-        <div style="font-size: 32px; margin-bottom: 8px;">💳</div>
-        <div style="font-size: 14px; color: #666; margin-bottom: 6px;">Available Balance</div>
-        <div style="font-size: 26px; font-weight: bold; color: #5f259f; margin-bottom: 16px;" id="checkBalAmount">₹0.00</div>
-        <button class="close-btn" onclick="closePopup('balancePopup')">Done</button>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    // 1. FIREBASE CONFIGURATION (স্বয়ংক্রিয় ক্লাউড কানেক্ট)
-    const firebaseConfig = {
-      apiKey: "AIzaSyBDvSlPsD814d9V0AdJKBGJa8-N_uA_9ak",
-      authDomain: "app1-87fff.firebaseapp.com",
-      databaseURL: "https://app1-87fff-default-rtdb.firebaseio.com",
-      projectId: "app1-87fff",
-      storageBucket: "app1-87fff.appspot.com",
-      messagingSenderId: "11369778398",
-      appId: "1:11369778398:web:5e8a8a7869b8c186fc864f"
-    };
+    let currentBalance = parseFloat(localStorage.getItem('balance')) || 50000.00;
 
-    let currentBalance = 50000.00;
-    let db = null;
-
-    try {
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-    } catch(e) {}
-
-    function renderBalance(amt) {
-      currentBalance = amt;
-      document.getElementById('balanceText').innerText = '₹' + currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    function updateBalanceDisplay() {
+      document.getElementById('walletBal').innerText = '₹' + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      localStorage.setItem('balance', currentBalance);
     }
 
-    // ক্লাউড থেকে ডাটা সিঙ্ক হওয়া
-    if (db) {
-      try {
-        db.ref('wallet/balance').on('value', (snap) => {
-          const val = snap.val();
-          if (val !== null) renderBalance(parseFloat(val));
-          else db.ref('wallet/balance').set(currentBalance);
-        });
-
-        db.ref('wallet/transactions').on('value', (snap) => {
-          const historyList = document.getElementById('historyList');
-          const items = [];
-          snap.forEach(child => { items.unshift(child.val()); });
-          if (items.length > 0) {
-            historyList.innerHTML = '';
-            items.forEach(tx => {
-              const item = document.createElement('div');
-              item.className = 'tx-item';
-              item.innerHTML = `
-                <div class="tx-details">
-                  <div class="tx-name">Received from ${tx.receiverName}</div>
-                  <div class="tx-time">${tx.time} • Successful</div>
-                </div>
-                <div class="tx-amount">+₹${parseFloat(tx.amount).toLocaleString('en-IN', {minimumFractionDigits: 2})}</div>
-              `;
-              historyList.appendChild(item);
-            });
-          }
-        });
-      } catch(e) {}
+    function checkBalance() {
+      alert("State Bank •••• 5424\nAvailable Balance: ₹" + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
     }
 
-    // 2. MODAL CONTROLS
-    function openPopup(id) { document.getElementById(id).classList.remove('modal-hidden'); }
-    function closePopup(id) { document.getElementById(id).classList.add('modal-hidden'); }
-
-    function openInputPopup(type) {
-      document.getElementById('inputTitle').innerText = 'Receive via ' + type;
-      document.getElementById('targetName').value = '';
-      document.getElementById('targetInput').value = '';
-      document.getElementById('targetAmount').value = '';
-      openPopup('inputPopup');
+    function openPayModal(type) {
+      document.getElementById('modalTitle').innerText = 'Send via ' + type;
+      document.getElementById('targetInput').placeholder = type === 'Mobile Number' ? 'Enter Mobile Number' : 'Enter Bank Account / UPI ID';
+      document.getElementById('payModal').style.display = 'flex';
     }
 
-    function showCheckBalance() {
-      document.getElementById('checkBalAmount').innerText = '₹' + currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2});
-      openPopup('balancePopup');
+    function openScanner() {
+      document.getElementById('scanModal').style.display = 'flex';
     }
 
-    // 3. QR CODE & UPI LINK DEEP PARSER
-    function handleScannedData(data) {
-      let name = "Merchant Store";
-      let upiId = data;
-      let amount = "";
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
 
-      if (data.includes("upi://pay")) {
-        try {
-          const queryString = data.substring(data.indexOf('?') + 1);
-          const params = new URLSearchParams(queryString);
-          if (params.get('pn')) name = decodeURIComponent(params.get('pn'));
-          if (params.get('pa')) upiId = decodeURIComponent(params.get('pa'));
-          if (params.get('am')) amount = params.get('am');
-        } catch (e) {
-          name = "UPI Merchant";
-        }
+    function addTransaction(title, amount) {
+      const historyList = document.getElementById('historyList');
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const item = document.createElement('div');
+      item.className = 'txn-item';
+      item.innerHTML = `
+        <div>
+          <div class="txn-title">${title}</div>
+          <div class="txn-time">State Bank • Today, ${timeStr}</div>
+        </div>
+        <div class="txn-amount txn-red">-₹${amount.toFixed(2)}</div>
+      `;
+      historyList.prepend(item);
+    }
+
+    function processPayment() {
+      const amount = parseFloat(document.getElementById('amountInput').value);
+      const target = document.getElementById('targetInput').value;
+
+      if (!target) {
+        alert('Please enter recipient detail!');
+        return;
+      }
+      if (isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid amount!');
+        return;
+      }
+      if (amount > currentBalance) {
+        alert('Insufficient wallet balance!');
+        return;
       }
 
-      document.getElementById('inputTitle').innerText = 'Pay to QR Merchant';
-      document.getElementById('targetName').value = name;
-      document.getElementById('targetInput').value = upiId;
-      document.getElementById('targetAmount').value = amount || '';
-      openPopup('inputPopup');
+      currentBalance -= amount;
+      updateBalanceDisplay();
+      addTransaction('Paid to ' + target, amount);
+
+      document.getElementById('amountInput').value = '';
+      document.getElementById('targetInput').value = '';
+      closeModal('payModal');
+      alert('Payment Successful!');
     }
 
-    // 4. TRANSACTION EXECUTION (+ ADD/CREDIT)
-    function submitInput() {
-      const name = document.getElementById('targetName').value.trim();
-      const inputVal = document.getElementById('targetInput').value.trim();
-      const amt = parseFloat(document.getElementById('targetAmount').value);
+    function processQRScan() {
+      const amount = parseFloat(document.getElementById('scanAmount').value);
+      if (isNaN(amount) || amount <= 0) {
+        alert('Please enter valid amount!');
+        return;
+      }
+      if (amount > currentBalance) {
+        alert('Insufficient balance!');
+        return;
+      }
 
-      if (!name) { alert('নাম লিখুন'); return; }
-      if (!inputVal) { alert('মোবাইল বা UPI আইডি দিন'); return; }
-      if (!amt || amt <= 0) { alert('টাকার পরিমাণ লিখুন'); return; }
+      currentBalance -= amount;
+      updateBalanceDisplay();
+      addTransaction('Paid to QR Merchant', amount);
 
-      closePopup('inputPopup');
-      processPayment(name, inputVal, amt);
+      document.getElementById('scanAmount').value = '';
+      closeModal('scanModal');
+      alert('QR Payment Successful!');
     }
 
-    function processPayment(receiverName, receiverNumber, amount) {
-      const updatedBalance = currentBalance + amount;
-      renderBalance(updatedBalance);
-
-      document.getElementById('popAmt').innerText = '+₹' + amount.toLocaleString('en-IN', {minimumFractionDigits: 2});
-      document.getElementById('popReceiver').innerText = 'Received from: ' + receiverName;
-      document.getElementById('popSubDetails').innerText = receiverNumber;
-
-      let randomTxn = Math.floor(1000000000 + Math.random() * 9000000000);
-      document.getElementById('popTxnId').innerText = 'Transaction ID: T' + randomTxn;
-
-      openPopup('successPopup');
-
-      const now = new Date();
-      const timeStr = 'Today, ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      const historyList = document.getElementById('historyList');
-      const newItem = document.createElement('div');
-      newItem.className = 'tx-item';
-      newItem.innerHTML = `
-        <div class="tx-details">
-          <div class="tx-name">Received from ${receiverName}</div>
-          <div class="tx-time">${timeStr} • Successful</div>
-        </div>
-        <div class="tx-amount">+₹${amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</div>
-      `;
-      historyList.prepend(newItem);
-
-      if (db) {
-   
+    // Initialize balance
+    updateBalanceDisplay();
+  </script>
+</body>
+</html>
