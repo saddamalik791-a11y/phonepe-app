@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PhonePe App Pay</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- jsQR Library for scanning QR using device camera and image files -->
+  <!-- jsQR Library for scanning QR using device camera -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <style>
     * {
@@ -267,16 +267,6 @@
       font-weight: 600;
       cursor: pointer;
       margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .gallery-btn {
-      background: #f0ebf8;
-      color: #5f259f;
-      border: 1.5px dashed #5f259f;
     }
 
     .modal-close {
@@ -477,13 +467,6 @@
         <div class="scan-overlay"></div>
       </div>
       <p style="font-size: 12px; color: #666; text-align: center; margin-bottom: 12px;">ক্যামেরাটি কিউআর কোডের সামনে সোজা রাখুন</p>
-      
-      <!-- Gallery Upload Option -->
-      <button class="modal-btn gallery-btn" onclick="document.getElementById('qrFileInput').click()">
-        <i class="fa-solid fa-image"></i> গ্যালারি থেকে QR বাছুন
-      </button>
-      <input type="file" id="qrFileInput" accept="image/*" style="display: none;" onchange="handleQRImageUpload(event)">
-
       <button class="modal-btn modal-close" onclick="stopCameraScanner()">Cancel</button>
     </div>
   </div>
@@ -510,7 +493,7 @@
     </div>
     <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Payment Successful</h2>
     <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 8px;" id="receiptAmount">₹0.00</h1>
-    <p style="font-size: 14px; opacity: 0.9;" id="receiptPayee">Paid to Successfully</p>
+    <p style="font-size: 14px; opacity: 0.9;" id="receiptPayee">Paid to Successfull</p>
 
     <div class="receipt-box">
       <div class="receipt-row">
@@ -596,8 +579,8 @@
         scanningActive = true;
         requestAnimationFrame(scanQRCodeTick);
       } catch (err) {
-        // Fallback: If camera access fails, prompt for gallery file
-        console.log("Camera access not available or denied.");
+        alert("ক্যামেরা অন করা যাচ্ছে না। ব্রাউজারে ক্যামেরার পারমিশন (Allow) দিন।");
+        stopCameraScanner();
       }
     }
 
@@ -634,39 +617,6 @@
         videoStream.getTracks().forEach(track => track.stop());
       }
       closeModal('scannerModal');
-    }
-
-    // Read QR Code Image from Gallery
-    function handleQRImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.getElementById('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0, img.width, img.height);
-
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: "dontInvert"
-          });
-
-          if (code) {
-            stopCameraScanner();
-            handleScannedData(code.data);
-          } else {
-            alert("এই ছবিতে কোনো সঠিক QR কোড পাওয়া যায়নি। স্পষ্ট ছবি আপলোড করুন।");
-          }
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-      event.target.value = ''; // Reset input
     }
 
     // Parse UPI QR format: upi://pay?pa=...&pn=...&am=...
@@ -734,4 +684,37 @@
     function addTransactionRecord(payee, amount) {
       const list = document.getElementById('historyList');
       const now = new Date();
-      const timeStr = now.toLocaleTimeStri
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const item = document.createElement('div');
+      item.className = 'txn-item';
+      item.innerHTML = `
+        <div>
+          <div class="txn-title">Paid to ${payee}</div>
+          <div class="txn-time">State Bank • Today, ${timeStr}</div>
+        </div>
+        <div class="txn-amount txn-red">-₹${amount.toFixed(2)}</div>
+      `;
+      list.prepend(item);
+    }
+
+    function showReceiptScreen(payee, amount) {
+      document.getElementById('receiptAmount').innerText = '₹' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('receiptPayee').innerText = 'Paid to ' + payee;
+      document.getElementById('receiptTxnId').innerText = 'T' + Math.floor(100000000000 + Math.random() * 900000000000);
+      
+      const now = new Date();
+      document.getElementById('receiptTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById('successScreen').style.display = 'flex';
+    }
+
+    function closeSuccessScreen() {
+      document.getElementById('successScreen').style.display = 'none';
+    }
+
+    // Initialize balance on first load
+    updateBalanceUI();
+  </script>
+</body>
+</html>
