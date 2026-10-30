@@ -1,5 +1,4 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- jsQR লাইব্রেরি -->
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
 <style>
@@ -9,12 +8,25 @@
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
 
-  body {
+  /* অ্যান্ড্রয়েড অ্যাপের মতো ফুলস্ক্রিন বডি */
+  html, body {
+    width: 100%;
+    min-height: 100vh;
     background-color: #121212;
     color: #fff;
-    padding-bottom: 50px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .app-layout {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 40px;
   }
 
   .header {
@@ -98,6 +110,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    flex: 1;
   }
 
   .wallet-card {
@@ -355,6 +368,10 @@
     font-size: 13px;
   }
 
+  .receipt-row:last-child {
+    margin-bottom: 0;
+  }
+
   .done-btn {
     margin-top: 22px;
     background: white;
@@ -372,70 +389,72 @@
 <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="saveProfilePic(this)">
 <input type="file" id="qrGalleryInput" accept="image/*" style="display:none;" onchange="scanFromGalleryFile(this)">
 
-<!-- Header -->
-<div class="header">
-  <div class="profile-section">
-    <div class="avatar-wrapper" onclick="document.getElementById('profilePicInput').click()" title="Change Profile">
-      <div class="avatar">
-        <span id="avatarText">SA</span>
-        <img id="avatarImg" alt="Profile">
-      </div>
-      <div class="avatar-badge"><i class="fa-solid fa-camera"></i></div>
-    </div>
-    <div class="user-info">
-      <h4>Saving Account</h4>
-      <p>State Bank •••• 5424</p>
-    </div>
-  </div>
-  <div class="badge">Live Sync</div>
-</div>
-
-<div class="container">
-  <!-- Wallet Balance -->
-  <div class="wallet-card">
-    <div class="wallet-title">Total Wallet Balance</div>
-    <div class="wallet-balance" id="walletBal">₹50,000.00</div>
-    <div class="upi-id">UPI ID: saddam424@ybl</div>
-  </div>
-
-  <!-- Actions -->
-  <div>
-    <div class="section-title">Transfer Money</div>
-    <div class="action-grid">
-      <div class="action-item" onclick="openSendMoney('Mobile Number', 'Enter Mobile Number')">
-        <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
-        <span class="action-label">To Mobile Number</span>
-      </div>
-      <div class="action-item" onclick="openSendMoney('Bank Account', 'Enter Account or UPI ID')">
-        <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
-        <span class="action-label">To Bank & Self A/c</span>
-      </div>
-      <div class="action-item" onclick="openQRScanner()">
-        <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
-        <span class="action-label">Scan Any QR Code</span>
-      </div>
-      <div class="action-item" onclick="showBalanceAlert()">
-        <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-        <span class="action-label">Check Balance</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Big Scan Button -->
-  <button class="scan-btn" onclick="openQRScanner()">
-    <i class="fa-solid fa-camera"></i> Scan & Pay Any QR
-  </button>
-
-  <!-- History -->
-  <div>
-    <div class="section-title">Recent Transactions</div>
-    <div class="history-card" id="historyList">
-      <div class="txn-item">
-        <div>
-          <div class="txn-title">Merchant Cash-In</div>
-          <div class="txn-time">State Bank • Initial Load</div>
+<div class="app-layout">
+  <!-- Header -->
+  <div class="header">
+    <div class="profile-section">
+      <div class="avatar-wrapper" onclick="document.getElementById('profilePicInput').click()" title="Change Profile">
+        <div class="avatar">
+          <span id="avatarText">SA</span>
+          <img id="avatarImg" alt="Profile">
         </div>
-        <div class="txn-amount txn-green">+₹500.00</div>
+        <div class="avatar-badge"><i class="fa-solid fa-camera"></i></div>
+      </div>
+      <div class="user-info">
+        <h4>Saving Account</h4>
+        <p>State Bank •••• 5424</p>
+      </div>
+    </div>
+    <div class="badge">Live Sync</div>
+  </div>
+
+  <div class="container">
+    <!-- Wallet Balance -->
+    <div class="wallet-card">
+      <div class="wallet-title">Available Balance</div>
+      <div class="wallet-balance" id="walletBal">₹550,000.00</div>
+      <div class="upi-id">UPI ID: saddam424@ybl</div>
+    </div>
+
+    <!-- Actions -->
+    <div>
+      <div class="section-title">Transfer Money</div>
+      <div class="action-grid">
+        <div class="action-item" onclick="openSendMoney('Mobile Number', 'Enter Mobile Number')">
+          <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+          <span class="action-label">To Mobile Number</span>
+        </div>
+        <div class="action-item" onclick="openSendMoney('Bank Account', 'Enter Account or UPI ID')">
+          <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
+          <span class="action-label">To Bank & Self A/c</span>
+        </div>
+        <div class="action-item" onclick="openQRScanner()">
+          <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
+          <span class="action-label">Scan Any QR Code</span>
+        </div>
+        <div class="action-item" onclick="showBalanceAlert()">
+          <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <span class="action-label">Check Balance</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Big Scan Button -->
+    <button class="scan-btn" onclick="openQRScanner()">
+      <i class="fa-solid fa-camera"></i> Scan & Pay Any QR
+    </button>
+
+    <!-- History -->
+    <div>
+      <div class="section-title">Recent Transactions</div>
+      <div class="history-card" id="historyList">
+        <div class="txn-item">
+          <div>
+            <div class="txn-title">Merchant Cash-In</div>
+            <div class="txn-time">State Bank • Initial Load</div>
+          </div>
+          <div class="txn-amount txn-green">+₹500.00</div>
+        </div>
       </div>
     </div>
   </div>
@@ -474,7 +493,7 @@
   <div class="success-circle"><i class="fa-solid fa-check"></i></div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Payment Successful</h2>
   <h1 style="font-size: 36px; margin-bottom: 6px;" id="receiptAmount">₹0.00</h1>
-  <p style="opacity: 0.9;" id="receiptPayee">Paid to Merchant</p>
+  <p style="opacity: 0.9;" id="receiptPayee">Paid to Successfull</p>
 
   <div class="receipt-box">
     <div class="receipt-row">
@@ -520,7 +539,6 @@
 
   // ২. প্রচণ্ড জোরালো সাউন্ড ও লাউড ঘোষণা
   function makeLoudSound(amt) {
-    // বিপ সাউন্ড
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
       if (AC) {
@@ -539,7 +557,6 @@
       }
     } catch(e){}
 
-    // খুব জোরে বাংলায় ভয়েস বলা
     try {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -674,10 +691,8 @@
     document.getElementById('walletBal').innerText = '₹' + myBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
     document.getElementById('paymentModal').style.display = 'none';
 
-    // সাউন্ড বাজানো
     makeLoudSound(amt);
 
-    // হিস্ট্রিতে যোগ করা
     var list = document.getElementById('historyList');
     var time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     var item = document.createElement('div');
@@ -685,7 +700,6 @@
     item.innerHTML = '<div><div class="txn-title">Paid to ' + name + '</div><div class="txn-time">State Bank • Today, ' + time + '</div></div><div class="txn-amount txn-red">-₹' + amt.toFixed(2) + '</div>';
     list.prepend(item);
 
-    // রসিদ দেখানো
     document.getElementById('receiptAmount').innerText = '₹' + amt.toLocaleString('en-IN', { minimumFractionDigits: 2 });
     document.getElementById('receiptPayee').innerText = 'Paid to ' + name;
     document.getElementById('receiptTxnId').innerText = 'T' + Math.floor(100000000000 + Math.random() * 900000000000);
@@ -693,7 +707,6 @@
     document.getElementById('successScreen').style.display = 'flex';
   }
 
-  // পেজ লোড হলে প্রোফাইল পিকচার চেক
   try {
     var savedP = localStorage.getItem('p_pic');
     if (savedP) applyPic(savedP);
