@@ -1,720 +1,701 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhonePe App Pay</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- jsQR Library for scanning QR using device camera -->
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- jsQR লাইব্রেরি -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
-    body {
-      background-color: #f5f6fa;
-      color: #333;
-      padding-bottom: 40px;
-    }
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    .header {
-      background: #5f259f;
-      color: white;
-      padding: 18px 16px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+  body {
+    background-color: #121212;
+    color: #fff;
+    padding-bottom: 50px;
+  }
 
-    .profile-section {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+  .header {
+    background: #1e1131;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #2d1a45;
+  }
 
-    .avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      border: 1.5px solid #fff;
-    }
+  .profile-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-    .user-info h4 {
-      font-size: 15px;
-      font-weight: 600;
-    }
+  .avatar-wrapper {
+    position: relative;
+    cursor: pointer;
+  }
 
-    .user-info p {
-      font-size: 12px;
-      opacity: 0.85;
-    }
+  .avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #5f259f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border: 2px solid #8e44ad;
+    overflow: hidden;
+    font-size: 16px;
+  }
 
-    .badge {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 5px 12px;
-      border-radius: 14px;
-      font-size: 11px;
-      font-weight: 600;
-    }
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+  }
 
-    .container {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+  .avatar-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: #0fa958;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+  }
 
-    .wallet-card {
-      background: linear-gradient(135deg, #6739b7, #512da8);
-      border-radius: 18px;
-      padding: 20px;
-      color: white;
-      box-shadow: 0 4px 15px rgba(95, 37, 159, 0.25);
-    }
+  .user-info h4 {
+    font-size: 15px;
+    font-weight: 600;
+  }
 
-    .wallet-title {
-      font-size: 13px;
-      opacity: 0.9;
-    }
+  .user-info p {
+    font-size: 12px;
+    color: #aaa;
+  }
 
-    .wallet-balance {
-      font-size: 30px;
-      font-weight: 700;
-      margin: 8px 0;
-    }
+  .badge {
+    background: #2a1b40;
+    color: #b580e2;
+    border: 1px solid #5f259f;
+    padding: 5px 12px;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 600;
+  }
 
-    .upi-id {
-      font-size: 12px;
-      opacity: 0.85;
-    }
+  .container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-    .section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #666;
-      margin-bottom: 10px;
-    }
+  .wallet-card {
+    background: linear-gradient(135deg, #4a154b, #2b0844);
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid #48236b;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  }
 
-    .action-grid {
-      background: white;
-      border-radius: 16px;
-      padding: 16px 8px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
+  .wallet-title {
+    font-size: 13px;
+    color: #ccc;
+  }
 
-    .action-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      cursor: pointer;
-    }
+  .wallet-balance {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 8px 0;
+    color: #fff;
+  }
 
-    .action-icon {
-      width: 48px;
-      height: 48px;
-      background: #5f259f;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      margin-bottom: 8px;
-      transition: transform 0.1s;
-    }
+  .upi-id {
+    font-size: 12px;
+    color: #bbb;
+  }
 
-    .action-item:active .action-icon {
-      transform: scale(0.92);
-    }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #aaa;
+    margin-bottom: 10px;
+  }
 
-    .action-label {
-      font-size: 11px;
-      line-height: 1.2;
-      color: #444;
-      font-weight: 500;
-    }
+  .action-grid {
+    background: #1c1c1e;
+    border-radius: 16px;
+    padding: 16px 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
 
-    .scan-btn {
-      background: #5f259f;
-      color: white;
-      border: none;
-      border-radius: 14px;
-      padding: 15px;
-      font-size: 16px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(95, 37, 159, 0.25);
-    }
+  .action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+  }
 
-    .scan-btn:active {
-      transform: scale(0.98);
-    }
+  .action-icon {
+    width: 48px;
+    height: 48px;
+    background: #39195b;
+    color: #c48df5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
 
-    .history-card {
-      background: white;
-      border-radius: 16px;
-      padding: 14px 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
+  .action-label {
+    font-size: 11px;
+    line-height: 1.2;
+    color: #bbb;
+  }
 
-    .txn-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
+  .scan-btn {
+    background: #5f259f;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    width: 100%;
+  }
 
-    .txn-item:last-child {
-      border-bottom: none;
-    }
+  .history-card {
+    background: #1c1c1e;
+    border-radius: 16px;
+    padding: 14px 16px;
+  }
 
-    .txn-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #222;
-    }
+  .txn-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #292929;
+  }
 
-    .txn-time {
-      font-size: 11px;
-      color: #888;
-      margin-top: 3px;
-    }
+  .txn-item:last-child {
+    border-bottom: none;
+  }
 
-    .txn-amount {
-      font-size: 15px;
-      font-weight: 700;
-    }
+  .txn-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #eee;
+  }
 
-    .txn-green {
-      color: #0fa958;
-    }
+  .txn-time {
+    font-size: 11px;
+    color: #888;
+    margin-top: 3px;
+  }
 
-    .txn-red {
-      color: #e53935;
-    }
+  .txn-amount {
+    font-size: 15px;
+    font-weight: 700;
+  }
 
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 1000;
-    }
+  .txn-green {
+    color: #0fa958;
+  }
 
-    .modal-content {
-      background: white;
-      border-radius: 20px;
-      padding: 20px;
-      width: 100%;
-      max-width: 360px;
-      box-sizing: border-box;
-      position: relative;
-    }
+  .txn-red {
+    color: #e53935;
+  }
 
-    .modal-content h3 {
-      font-size: 17px;
-      color: #5f259f;
-      margin-bottom: 15px;
-      text-align: center;
-    }
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 99999;
+  }
 
-    .modal-input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #d5d5d5;
-      border-radius: 10px;
-      font-size: 14px;
-      margin-bottom: 12px;
-      outline: none;
-    }
+  .modal-content {
+    background: #242426;
+    border-radius: 18px;
+    padding: 22px;
+    width: 100%;
+    max-width: 360px;
+  }
 
-    .modal-input:focus {
-      border-color: #5f259f;
-    }
+  .modal-content h3 {
+    font-size: 17px;
+    color: #b580e2;
+    margin-bottom: 15px;
+    text-align: center;
+  }
 
-    .modal-btn {
-      width: 100%;
-      padding: 13px;
-      background: #5f259f;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 8px;
-    }
+  .modal-input {
+    width: 100%;
+    padding: 12px;
+    background: #18181a;
+    border: 1px solid #444;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #fff;
+    margin-bottom: 12px;
+    outline: none;
+  }
 
-    .modal-close {
-      background: #ececec;
-      color: #444;
-    }
+  .modal-btn {
+    width: 100%;
+    padding: 13px;
+    background: #5f259f;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
 
-    /* Camera Scanner Screen */
-    #scannerContainer {
-      position: relative;
-      width: 100%;
-      height: 250px;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
+  .modal-gallery-btn {
+    background: #39195b;
+    color: #dfbaff;
+  }
 
-    #video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  .modal-close {
+    background: #3a3a3c;
+    color: #ccc;
+  }
 
-    .scan-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 160px;
-      height: 160px;
-      border: 2px dashed #0fa958;
-      border-radius: 12px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
-      pointer-events: none;
-    }
+  #scannerContainer {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
 
-    /* Success Receipt Screen */
-    #successScreen {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #0fa958;
-      color: white;
-      z-index: 2000;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-      animation: fadeIn 0.25s ease-in-out;
-    }
+  #video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+  /* Success Screen */
+  #successScreen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0fa958;
+    color: white;
+    z-index: 100000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
 
-    .success-circle {
-      width: 90px;
-      height: 90px;
-      background: white;
-      color: #0fa958;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 45px;
-      margin-bottom: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      animation: pop 0.3s ease-out;
-    }
+  .success-circle {
+    width: 85px;
+    height: 85px;
+    background: white;
+    color: #0fa958;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    margin-bottom: 16px;
+  }
 
-    @keyframes pop {
-      0% { transform: scale(0.5); }
-      70% { transform: scale(1.15); }
-      100% { transform: scale(1); }
-    }
+  .receipt-box {
+    background: white;
+    color: #222;
+    border-radius: 16px;
+    padding: 18px;
+    width: 100%;
+    max-width: 320px;
+    margin-top: 18px;
+    text-align: left;
+  }
 
-    .receipt-box {
-      background: white;
-      color: #333;
-      border-radius: 16px;
-      padding: 20px;
-      width: 100%;
-      max-width: 320px;
-      margin-top: 20px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
-      text-align: left;
-    }
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
 
-    .receipt-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      font-size: 13px;
-    }
+  .done-btn {
+    margin-top: 22px;
+    background: white;
+    color: #0fa958;
+    border: none;
+    padding: 12px 36px;
+    border-radius: 25px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+</style>
 
-    .receipt-row:last-child {
-      margin-bottom: 0;
-    }
+<!-- Hidden File Inputs -->
+<input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="saveProfilePic(this)">
+<input type="file" id="qrGalleryInput" accept="image/*" style="display:none;" onchange="scanFromGalleryFile(this)">
 
-    .receipt-row .label {
-      color: #777;
-    }
-
-    .receipt-row .val {
-      font-weight: 600;
-      color: #222;
-    }
-
-    .done-btn {
-      margin-top: 24px;
-      background: white;
-      color: #0fa958;
-      border: none;
-      padding: 12px 35px;
-      border-radius: 25px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Header -->
-  <div class="header">
-    <div class="profile-section">
-      <div class="avatar">SA</div>
-      <div class="user-info">
-        <h4>Saving Account</h4>
-        <p>State Bank •••• 5424</p>
+<!-- Header -->
+<div class="header">
+  <div class="profile-section">
+    <div class="avatar-wrapper" onclick="document.getElementById('profilePicInput').click()" title="Change Profile">
+      <div class="avatar">
+        <span id="avatarText">SA</span>
+        <img id="avatarImg" alt="Profile">
       </div>
+      <div class="avatar-badge"><i class="fa-solid fa-camera"></i></div>
     </div>
-    <div class="badge">Live Sync</div>
+    <div class="user-info">
+      <h4>Saving Account</h4>
+      <p>State Bank •••• 5424</p>
+    </div>
+  </div>
+  <div class="badge">Live Sync</div>
+</div>
+
+<div class="container">
+  <!-- Wallet Balance -->
+  <div class="wallet-card">
+    <div class="wallet-title">Total Wallet Balance</div>
+    <div class="wallet-balance" id="walletBal">₹50,000.00</div>
+    <div class="upi-id">UPI ID: saddam424@ybl</div>
   </div>
 
-  <div class="container">
-    <!-- Wallet Balance -->
-    <div class="wallet-card">
-      <div class="wallet-title">Total Wallet Balance</div>
-      <div class="wallet-balance" id="walletBal">₹50,000.00</div>
-      <div class="upi-id">UPI ID: saddam424@ybl</div>
-    </div>
-
-    <!-- Actions -->
-    <div>
-      <div class="section-title">Transfer Money</div>
-      <div class="action-grid">
-        <div class="action-item" onclick="openManualPay('Mobile Number')">
-          <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
-          <span class="action-label">To Mobile Number</span>
-        </div>
-        <div class="action-item" onclick="openManualPay('Bank Account')">
-          <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
-          <span class="action-label">To Bank & Self A/c</span>
-        </div>
-        <div class="action-item" onclick="startCameraScanner()">
-          <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
-          <span class="action-label">Scan QR Code</span>
-        </div>
-        <div class="action-item" onclick="checkBalanceAlert()">
-          <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-          <span class="action-label">Check Balance</span>
-        </div>
+  <!-- Actions -->
+  <div>
+    <div class="section-title">Transfer Money</div>
+    <div class="action-grid">
+      <div class="action-item" onclick="openSendMoney('Mobile Number', 'Enter Mobile Number')">
+        <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+        <span class="action-label">To Mobile Number</span>
+      </div>
+      <div class="action-item" onclick="openSendMoney('Bank Account', 'Enter Account or UPI ID')">
+        <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
+        <span class="action-label">To Bank & Self A/c</span>
+      </div>
+      <div class="action-item" onclick="openQRScanner()">
+        <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
+        <span class="action-label">Scan Any QR Code</span>
+      </div>
+      <div class="action-item" onclick="showBalanceAlert()">
+        <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+        <span class="action-label">Check Balance</span>
       </div>
     </div>
+  </div>
 
-    <!-- Live Scanner Button -->
-    <button class="scan-btn" onclick="startCameraScanner()">
-      <i class="fa-solid fa-camera"></i> Scan & Pay QR
+  <!-- Big Scan Button -->
+  <button class="scan-btn" onclick="openQRScanner()">
+    <i class="fa-solid fa-camera"></i> Scan & Pay Any QR
+  </button>
+
+  <!-- History -->
+  <div>
+    <div class="section-title">Recent Transactions</div>
+    <div class="history-card" id="historyList">
+      <div class="txn-item">
+        <div>
+          <div class="txn-title">Merchant Cash-In</div>
+          <div class="txn-time">State Bank • Initial Load</div>
+        </div>
+        <div class="txn-amount txn-green">+₹500.00</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR Scanner Modal -->
+<div class="modal" id="scannerModal">
+  <div class="modal-content">
+    <h3>QR Scanner</h3>
+    <div id="scannerContainer">
+      <video id="video" playsinline></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+    </div>
+
+    <!-- Gallery Select Button -->
+    <button class="modal-btn modal-gallery-btn" onclick="document.getElementById('qrGalleryInput').click()">
+      <i class="fa-solid fa-image"></i> গ্যালারি থেকে QR দিন
     </button>
+    <button class="modal-btn modal-close" onclick="closeQRScanner()">Cancel</button>
+  </div>
+</div>
 
-    <!-- History -->
-    <div>
-      <div class="section-title">Recent Transactions</div>
-      <div class="history-card" id="historyList">
-        <div class="txn-item">
-          <div>
-            <div class="txn-title">Merchant Cash-In</div>
-            <div class="txn-time">State Bank • Initial Load</div>
-          </div>
-          <div class="txn-amount txn-green">+₹500.00</div>
-        </div>
-      </div>
+<!-- Payment Modal -->
+<div class="modal" id="paymentModal">
+  <div class="modal-content">
+    <h3 id="payModalTitle">Pay Money</h3>
+    <input type="text" id="payeeDetails" class="modal-input" placeholder="Enter Name or UPI ID">
+    <input type="number" id="payAmount" class="modal-input" placeholder="₹ Enter Amount">
+    <button class="modal-btn" onclick="submitPayment()">Proceed to Pay</button>
+    <button class="modal-btn modal-close" onclick="document.getElementById('paymentModal').style.display='none'">Cancel</button>
+  </div>
+</div>
+
+<!-- Success Screen -->
+<div id="successScreen">
+  <div class="success-circle"><i class="fa-solid fa-check"></i></div>
+  <h2 style="font-size: 22px; margin-bottom: 6px;">Payment Successful</h2>
+  <h1 style="font-size: 36px; margin-bottom: 6px;" id="receiptAmount">₹0.00</h1>
+  <p style="opacity: 0.9;" id="receiptPayee">Paid to Merchant</p>
+
+  <div class="receipt-box">
+    <div class="receipt-row">
+      <span>Transaction ID</span>
+      <strong id="receiptTxnId">T2600...</strong>
+    </div>
+    <div class="receipt-row">
+      <span>Debited From</span>
+      <strong>State Bank (•••• 5424)</strong>
+    </div>
+    <div class="receipt-row">
+      <span>Time</span>
+      <strong id="receiptTime">Just now</strong>
     </div>
   </div>
 
-  <!-- Real Camera QR Scanner Modal -->
-  <div class="modal" id="scannerModal">
-    <div class="modal-content">
-      <h3>Live Camera QR Scanner</h3>
-      <div id="scannerContainer">
-        <video id="video" playsinline></video>
-        <canvas id="canvas" style="display:none;"></canvas>
-        <div class="scan-overlay"></div>
-      </div>
-      <p style="font-size: 12px; color: #666; text-align: center; margin-bottom: 12px;">ক্যামেরাটি কিউআর কোডের সামনে সোজা রাখুন</p>
-      <button class="modal-btn modal-close" onclick="stopCameraScanner()">Cancel</button>
-    </div>
-  </div>
+  <button class="done-btn" onclick="document.getElementById('successScreen').style.display='none'">Done</button>
+</div>
 
-  <!-- Payment Form Modal -->
-  <div class="modal" id="paymentModal">
-    <div class="modal-content">
-      <h3 id="payModalTitle">Pay Money</h3>
-      <label style="font-size: 12px; color: #555; margin-bottom: 4px; display:block;">Recipient Details</label>
-      <input type="text" id="payeeDetails" class="modal-input" placeholder="Name or UPI ID">
-      
-      <label style="font-size: 12px; color: #555; margin-bottom: 4px; display:block;">Amount (₹)</label>
-      <input type="number" id="payAmount" class="modal-input" placeholder="₹ Enter Amount" min="1">
-      
-      <button class="modal-btn" onclick="executeTransaction()">Proceed to Pay</button>
-      <button class="modal-btn modal-close" onclick="closeModal('paymentModal')">Cancel</button>
-    </div>
-  </div>
+<script>
+  var myBalance = 50000.00;
+  var camStream = null;
+  var isScanning = false;
 
-  <!-- Fullscreen Success Receipt -->
-  <div id="successScreen">
-    <div class="success-circle">
-      <i class="fa-solid fa-check"></i>
-    </div>
-    <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Payment Successful</h2>
-    <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 8px;" id="receiptAmount">₹0.00</h1>
-    <p style="font-size: 14px; opacity: 0.9;" id="receiptPayee">Paid to Successfull</p>
+  // ১. প্রোফাইল ছবি সেভ ও লোড
+  function saveProfilePic(input) {
+    if (input.files && input.files[0]) {
+      var r = new FileReader();
+      r.onload = function(e) {
+        var base64 = e.target.result;
+        try { localStorage.setItem('p_pic', base64); } catch(err){}
+        applyPic(base64);
+      };
+      r.readAsDataURL(input.files[0]);
+    }
+  }
 
-    <div class="receipt-box">
-      <div class="receipt-row">
-        <span class="label">Transaction ID</span>
-        <span class="val" id="receiptTxnId">T26102923...</span>
-      </div>
-      <div class="receipt-row">
-        <span class="label">Debited From</span>
-        <span class="val">State Bank (•••• 5424)</span>
-      </div>
-      <div class="receipt-row">
-        <span class="label">Time</span>
-        <span class="val" id="receiptTime">Just now</span>
-      </div>
-    </div>
+  function applyPic(url) {
+    document.getElementById('avatarImg').src = url;
+    document.getElementById('avatarImg').style.display = 'block';
+    document.getElementById('avatarText').style.display = 'none';
+  }
 
-    <button class="done-btn" onclick="closeSuccessScreen()">Done</button>
-  </div>
-
-  <script>
-    let currentBalance = parseFloat(localStorage.getItem('balance')) || 50000.00;
-    let videoStream = null;
-    let scanningActive = false;
-
-    // Web Audio API for Success Beep Sound
-    function playSuccessTone() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-        osc.frequency.setValueAtTime(880.00, audioCtx.currentTime + 0.12); // A5
-
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
-
+  // ২. প্রচণ্ড জোরালো সাউন্ড ও লাউড ঘোষণা
+  function makeLoudSound(amt) {
+    // বিপ সাউন্ড
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        var ctx = new AC();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(750, ctx.currentTime);
+        osc.frequency.setValueAtTime(1050, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(1.0, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
         osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
+        gain.connect(ctx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.45);
-      } catch (e) {
-        console.log("Audio not supported:", e);
+        osc.stop(ctx.currentTime + 0.5);
       }
-    }
+    } catch(e){}
 
-    function updateBalanceUI() {
-      document.getElementById('walletBal').innerText = '₹' + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-      localStorage.setItem('balance', currentBalance);
-    }
-
-    function checkBalanceAlert() {
-      alert("State Bank of India •••• 5424\nAvailable Balance: ₹" + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
-    }
-
-    function openManualPay(type) {
-      document.getElementById('payModalTitle').innerText = 'Transfer to ' + type;
-      document.getElementById('payeeDetails').value = '';
-      document.getElementById('payeeDetails').placeholder = type === 'Mobile Number' ? 'Enter Mobile Number' : 'Enter Bank Account / UPI';
-      document.getElementById('payAmount').value = '';
-      document.getElementById('paymentModal').style.display = 'flex';
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-
-    // Camera QR Code Scanner Logic
-    async function startCameraScanner() {
-      const modal = document.getElementById('scannerModal');
-      const video = document.getElementById('video');
-      modal.style.display = 'flex';
-
-      try {
-        videoStream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: "environment" } 
-        });
-        video.srcObject = videoStream;
-        video.setAttribute("playsinline", true);
-        video.play();
-        scanningActive = true;
-        requestAnimationFrame(scanQRCodeTick);
-      } catch (err) {
-        alert("ক্যামেরা অন করা যাচ্ছে না। ব্রাউজারে ক্যামেরার পারমিশন (Allow) দিন।");
-        stopCameraScanner();
+    // খুব জোরে বাংলায় ভয়েস বলা
+    try {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        setTimeout(function() {
+          var sp = new SpeechSynthesisUtterance("ফোনপে তে " + amt + " টাকা সফলভাবে দেওয়া হয়েছে");
+          sp.volume = 1;
+          sp.rate = 0.95;
+          sp.lang = 'bn-BD';
+          window.speechSynthesis.speak(sp);
+        }, 300);
       }
-    }
+    } catch(e){}
+  }
 
-    function scanQRCodeTick() {
-      if (!scanningActive) return;
-      const video = document.getElementById('video');
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
+  // ৩. ট্রান্সফার বাটন লজিক
+  function openSendMoney(title, ph) {
+    document.getElementById('payModalTitle').innerText = 'Transfer to ' + title;
+    document.getElementById('payeeDetails').value = '';
+    document.getElementById('payeeDetails').placeholder = ph;
+    document.getElementById('payAmount').value = '';
+    document.getElementById('paymentModal').style.display = 'flex';
+  }
 
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.height = video.videoHeight;
-        canvas.width = video.videoWidth;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: "dontInvert",
-        });
+  function showBalanceAlert() {
+    alert("State Bank of India •••• 5424\nউপলব্ধ ব্যালেন্স: ₹" + myBalance.toFixed(2));
+  }
 
+  // ৪. ক্যামেরা ও গ্যালারি স্ক্যান
+  function openQRScanner() {
+    document.getElementById('scannerModal').style.display = 'flex';
+    var video = document.getElementById('video');
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function(s) {
+          camStream = s;
+          video.srcObject = s;
+          video.setAttribute('playsinline', true);
+          video.play();
+          isScanning = true;
+          requestAnimationFrame(scanLoop);
+        }).catch(function(e){});
+      }
+    } catch(e){}
+  }
+
+  function scanLoop() {
+    if (!isScanning) return;
+    var video = document.getElementById('video');
+    var canvas = document.getElementById('canvas');
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      if (window.jsQR) {
+        var code = jsQR(imgData.data, imgData.width, imgData.height);
         if (code) {
-          // QR Code Found
-          scanningActive = false;
-          stopCameraScanner();
-          handleScannedData(code.data);
+          closeQRScanner();
+          fillQRData(code.data);
           return;
         }
       }
-      requestAnimationFrame(scanQRCodeTick);
     }
+    requestAnimationFrame(scanLoop);
+  }
 
-    function stopCameraScanner() {
-      scanningActive = false;
-      if (videoStream) {
-        videoStream.getTracks().forEach(track => track.stop());
-      }
-      closeModal('scannerModal');
+  function closeQRScanner() {
+    isScanning = false;
+    if (camStream) {
+      camStream.getTracks().forEach(function(t){ t.stop(); });
     }
+    document.getElementById('scannerModal').style.display = 'none';
+  }
 
-    // Parse UPI QR format: upi://pay?pa=...&pn=...&am=...
-    function handleScannedData(qrString) {
-      let payee = "Scanned Merchant";
-      let amount = "";
-
-      if (qrString.startsWith("upi://pay")) {
-        try {
-          const urlParams = new URLSearchParams(qrString.replace("upi://pay?", ""));
-          const pn = urlParams.get('pn');
-          const pa = urlParams.get('pa');
-          const am = urlParams.get('am');
-
-          payee = pn ? decodeURIComponent(pn) : (pa || payee);
-          if (am) amount = am;
-        } catch (e) {
-          payee = qrString;
-        }
-      } else {
-        payee = qrString.length > 30 ? qrString.substring(0, 30) + '...' : qrString;
-      }
-
-      document.getElementById('payModalTitle').innerText = 'Pay Scanned QR';
-      document.getElementById('payeeDetails').value = payee;
-      document.getElementById('payAmount').value = amount;
-      document.getElementById('paymentModal').style.display = 'flex';
+  function scanFromGalleryFile(input) {
+    if (input.files && input.files[0]) {
+      var r = new FileReader();
+      r.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          if (window.jsQR) {
+            var code = jsQR(imgData.data, imgData.width, imgData.height);
+            if (code) {
+              closeQRScanner();
+              fillQRData(code.data);
+            } else {
+              alert("QR কোড পড়া যায়নি! পরিষ্কার ছবি দিন।");
+            }
+          }
+        };
+        img.src = e.target.result;
+      };
+      r.readAsDataURL(input.files[0]);
     }
+  }
 
-    // Execute Transaction
-    function executeTransaction() {
-      const payee = document.getElementById('payeeDetails').value.trim();
-      const amount = parseFloat(document.getElementById('payAmount').value);
-
-      if (!payee) {
-        alert("দয়া করে নাম বা UPI ID লিখুন");
-        return;
-      }
-      if (isNaN(amount) || amount <= 0) {
-        alert("সঠিক টাকার পরিমাণ লিখুন");
-        return;
-      }
-      if (amount > currentBalance) {
-        alert("আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই!");
-        return;
-      }
-
-      // Deduct balance
-      currentBalance -= amount;
-      updateBalanceUI();
-
-      // Close input modal
-      closeModal('paymentModal');
-
-      // Add to transaction history
-      addTransactionRecord(payee, amount);
-
-      // Play PhonePe Success Tone
-      playSuccessTone();
-
-      // Show Fullscreen Green Receipt
-      showReceiptScreen(payee, amount);
+  function fillQRData(text) {
+    var payee = "Scanned Merchant";
+    var amt = "";
+    if (text.indexOf("upi://pay") !== -1) {
+      var query = text.split("?")[1] || "";
+      var params = new URLSearchParams(query);
+      payee = params.get('pn') ? decodeURIComponent(params.get('pn')) : (params.get('pa') || payee);
+      amt = params.get('am') || "";
+    } else {
+      payee = text.substring(0, 25);
     }
+    document.getElementById('payModalTitle').innerText = 'Pay Scanned QR';
+    document.getElementById('payeeDetails').value = payee;
+    document.getElementById('payAmount').value = amt;
+    document.getElementById('paymentModal').style.display = 'flex';
+  }
 
-    function addTransactionRecord(payee, amount) {
-      const list = document.getElementById('historyList');
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  // ৫. পেমেন্ট সাবমিট
+  function submitPayment() {
+    var name = document.getElementById('payeeDetails').value.trim();
+    var amt = parseFloat(document.getElementById('payAmount').value);
 
-      const item = document.createElement('div');
-      item.className = 'txn-item';
-      item.innerHTML = `
-        <div>
-          <div class="txn-title">Paid to ${payee}</div>
-          <div class="txn-time">State Bank • Today, ${timeStr}</div>
-        </div>
-        <div class="txn-amount txn-red">-₹${amount.toFixed(2)}</div>
-      `;
-      list.prepend(item);
-    }
+    if (!name) { alert("নাম বা UPI দিন"); return; }
+    if (isNaN(amt) || amt <= 0) { alert("টাকার সঠিক পরিমাণ দিন"); return; }
+    if (amt > myBalance) { alert("ব্যালেন্স নেই!"); return; }
 
-    function showReceiptScreen(payee, amount) {
-      document.getElementById('receiptAmount').innerText = '₹' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-      document.getElementById('receiptPayee').innerText = 'Paid to ' + payee;
-      document.getElementById('receiptTxnId').innerText = 'T' + Math.floor(100000000000 + Math.random() * 900000000000);
-      
-      const now = new Date();
-      document.getElementById('receiptTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    myBalance -= amt;
+    document.getElementById('walletBal').innerText = '₹' + myBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    document.getElementById('paymentModal').style.display = 'none';
 
-      document.getElementById('successScreen').style.display = 'flex';
-    }
+    // সাউন্ড বাজানো
+    makeLoudSound(amt);
 
-    function closeSuccessScreen() {
-      document.getElementById('successScreen').style.display = 'none';
-    }
+    // হিস্ট্রিতে যোগ করা
+    var list = document.getElementById('historyList');
+    var time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    var item = document.createElement('div');
+    item.className = 'txn-item';
+    item.innerHTML = '<div><div class="txn-title">Paid to ' + name + '</div><div class="txn-time">State Bank • Today, ' + time + '</div></div><div class="txn-amount txn-red">-₹' + amt.toFixed(2) + '</div>';
+    list.prepend(item);
 
-    // Initialize balance on first load
-    updateBalanceUI();
-  </script>
-</body>
-</html>
+    // রসিদ দেখানো
+    document.getElementById('receiptAmount').innerText = '₹' + amt.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    document.getElementById('receiptPayee').innerText = 'Paid to ' + name;
+    document.getElementById('receiptTxnId').innerText = 'T' + Math.floor(100000000000 + Math.random() * 900000000000);
+    document.getElementById('receiptTime').innerText = time;
+    document.getElementById('successScreen').style.display = 'flex';
+  }
+
+  // পেজ লোড হলে প্রোফাইল পিকচার চেক
+  try {
+    var savedP = localStorage.getItem('p_pic');
+    if (savedP) applyPic(savedP);
+  } catch(e){}
+</script>
