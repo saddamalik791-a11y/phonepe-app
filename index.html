@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#1e1131">
-  <meta name="mobile-web-app-capable" content="yes">
   <title>PhonePe Official</title>
-
-  <!-- FontAwesome Icons -->
+  
+  <!-- আইকন ও কিউআর ইঞ্জিন -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- সুপার-ফাস্ট অফলাইন QR স্ক্যানার ইঞ্জিন -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
   <style>
@@ -19,17 +16,15 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
-    html, body {
-      width: 100%;
-      min-height: 100vh;
+    body {
       background-color: #121212;
       color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       overflow-x: hidden;
-      touch-action: manipulation;
     }
 
     .app-layout {
@@ -40,6 +35,7 @@
       padding-bottom: 30px;
     }
 
+    /* হেডার */
     .header {
       background: #1e1131;
       padding: 16px;
@@ -56,25 +52,21 @@
       display: flex;
       align-items: center;
       gap: 12px;
-    }
-
-    .avatar-wrapper {
-      position: relative;
       cursor: pointer;
     }
 
     .avatar {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: #5f259f;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      font-weight: bold;
       border: 2px solid #8e44ad;
       overflow: hidden;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .avatar img {
@@ -84,41 +76,16 @@
       display: none;
     }
 
-    .avatar-badge {
-      position: absolute;
-      bottom: -2px;
-      right: -2px;
-      background: #0fa958;
-      color: white;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      border: 1.5px solid #1e1131;
-    }
-
-    .user-info h4 {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .user-info p {
-      font-size: 12px;
-      color: #aaa;
-      margin-top: 2px;
-    }
+    .user-info h4 { font-size: 15px; }
+    .user-info p { font-size: 12px; color: #aaa; margin-top: 2px; }
 
     .badge {
       background: #2a1b40;
       color: #b580e2;
       border: 1px solid #5f259f;
-      padding: 5px 12px;
+      padding: 4px 10px;
       border-radius: 12px;
       font-size: 11px;
-      font-weight: 600;
     }
 
     .container {
@@ -129,31 +96,18 @@
       flex: 1;
     }
 
+    /* ওয়ালেট কার্ড */
     .wallet-card {
       background: linear-gradient(135deg, #4a154b, #2b0844);
       border-radius: 18px;
-      padding: 20px 18px;
+      padding: 20px;
       border: 1px solid #48236b;
       box-shadow: 0 4px 14px rgba(0,0,0,0.4);
     }
 
-    .wallet-title {
-      font-size: 13px;
-      color: #ccc;
-    }
-
-    .wallet-balance {
-      font-size: 32px;
-      font-weight: 800;
-      margin: 8px 0;
-      color: #fff;
-      letter-spacing: 0.5px;
-    }
-
-    .upi-id {
-      font-size: 12px;
-      color: #bbb;
-    }
+    .wallet-title { font-size: 13px; color: #ccc; }
+    .wallet-balance { font-size: 32px; font-weight: bold; margin: 8px 0; color: #fff; }
+    .upi-id { font-size: 12px; color: #bbb; }
 
     .section-title {
       font-size: 14px;
@@ -162,6 +116,7 @@
       margin-bottom: 10px;
     }
 
+    /* ট্রান্সফার অ্যাকশন গ্রিড */
     .action-grid {
       background: #1c1c1e;
       border-radius: 16px;
@@ -177,46 +132,46 @@
       align-items: center;
       text-align: center;
       cursor: pointer;
+      user-select: none;
     }
 
-    .action-item:active {
-      transform: scale(0.92);
-      opacity: 0.8;
-    }
+    .action-item:active { opacity: 0.6; transform: scale(0.95); }
 
     .action-icon {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       background: #39195b;
       color: #c48df5;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 19px;
-      margin-bottom: 8px;
+      font-size: 18px;
+      margin-bottom: 6px;
+      pointer-events: none;
     }
 
     .action-label {
       font-size: 11px;
-      line-height: 1.25;
       color: #bbb;
+      pointer-events: none;
     }
 
-    .button-group {
+    /* বড় বাটনগুলো */
+    .btn-group {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .scan-btn {
+    .custom-btn {
       background: #5f259f;
       color: white;
       border: none;
       border-radius: 14px;
       padding: 15px;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -225,17 +180,15 @@
       width: 100%;
     }
 
-    .scan-btn:active {
-      background: #4a1d7c;
-      transform: scale(0.98);
-    }
+    .custom-btn:active { opacity: 0.8; transform: scale(0.98); }
 
-    .gallery-btn {
+    .custom-btn-alt {
       background: #2d1847;
       border: 1px solid #5f259f;
       color: #dfbaff;
     }
 
+    /* হিস্ট্রি কার্ড */
     .history-card {
       background: #1c1c1e;
       border-radius: 16px;
@@ -250,151 +203,112 @@
       border-bottom: 1px solid #292929;
     }
 
-    .txn-item:last-child {
-      border-bottom: none;
-    }
+    .txn-item:last-child { border-bottom: none; }
+    .txn-title { font-size: 14px; font-weight: 600; }
+    .txn-time { font-size: 11px; color: #888; margin-top: 3px; }
+    .txn-amount { font-size: 15px; font-weight: bold; color: #e53935; }
 
-    .txn-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #eee;
-    }
-
-    .txn-time {
-      font-size: 11px;
-      color: #888;
-      margin-top: 3px;
-    }
-
-    .txn-amount {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .txn-red {
-      color: #e53935;
-    }
-
-    /* Modals */
-    .modal {
+    /* পপআপ মডাল (ডিফল্টভাবে লুকানো) */
+    .modal-overlay {
       display: none;
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: rgba(0, 0, 0, 0.88);
       align-items: center;
       justify-content: center;
       padding: 20px;
-      z-index: 99999;
+      z-index: 9999;
     }
 
-    .modal-content {
+    .modal-box {
       background: #242426;
-      border-radius: 20px;
+      border-radius: 18px;
       padding: 22px;
       width: 100%;
-      max-width: 340px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      max-width: 330px;
       text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
-    .modal-content h3 {
+    .modal-box h3 {
       font-size: 18px;
       color: #b580e2;
-      margin-bottom: 15px;
+      margin-bottom: 14px;
     }
 
-    .modal-input {
+    .modal-box input {
       width: 100%;
       padding: 13px;
       background: #18181a;
       border: 1px solid #444;
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 14px;
       color: #fff;
       margin-bottom: 12px;
       outline: none;
-      user-select: text;
-      -webkit-user-select: text;
     }
 
-    .modal-input:focus {
-      border-color: #5f259f;
-    }
+    .modal-box input:focus { border-color: #5f259f; }
 
-    .modal-btn {
+    .modal-box button {
       width: 100%;
-      padding: 14px;
-      background: #5f259f;
-      color: white;
-      border: none;
+      padding: 13px;
       border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
+      border: none;
+      font-weight: bold;
+      font-size: 14px;
       cursor: pointer;
-      margin-bottom: 8px;
+      margin-top: 8px;
     }
 
-    .modal-btn:active {
-      background: #4a1d7c;
-    }
+    .btn-submit { background: #5f259f; color: white; }
+    .btn-submit:active { background: #4a1d7c; }
+    .btn-cancel { background: #3a3a3c; color: #ccc; }
 
-    .modal-close {
-      background: #3a3a3c;
-      color: #ccc;
-    }
-
-    #scannerContainer {
+    /* ক্যামেরা ভিউ */
+    #scannerBox {
       position: relative;
       width: 100%;
-      height: 250px;
+      height: 230px;
       background: #000;
-      border-radius: 14px;
+      border-radius: 12px;
       overflow: hidden;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    #videoView {
+    #liveVideo {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .scanner-crosshair {
+    .scanner-target {
       position: absolute;
-      width: 170px;
-      height: 170px;
+      width: 150px;
+      height: 150px;
       border: 2px solid #0fa958;
-      border-radius: 14px;
+      border-radius: 12px;
       box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
       pointer-events: none;
     }
 
-    .scanner-line {
-      position: absolute;
-      width: 160px;
-      height: 2px;
-      background: #0fa958;
-      box-shadow: 0 0 8px #0fa958;
-      top: 40px;
-      animation: scanAnim 2s infinite ease-in-out alternate;
-    }
-
-    @keyframes scanAnim {
-      0% { top: 45px; }
-      100% { top: 195px; }
-    }
-
-    /* Success Screen */
-    #successScreen {
+    /* সফল স্ক্রিন */
+    #successModal {
       display: none;
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: #0fa958;
       color: white;
-      z-index: 100000;
+      z-index: 10000;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -402,26 +316,20 @@
       text-align: center;
     }
 
-    .success-circle {
-      width: 85px;
-      height: 85px;
+    .success-icon {
+      width: 80px;
+      height: 80px;
       background: white;
       color: #0fa958;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 42px;
+      font-size: 40px;
       margin-bottom: 16px;
-      animation: popIn 0.35s ease-out;
     }
 
-    @keyframes popIn {
-      0% { transform: scale(0.4); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .receipt-box {
+    .receipt {
       background: white;
       color: #222;
       border-radius: 16px;
@@ -430,49 +338,45 @@
       max-width: 320px;
       margin-top: 18px;
       text-align: left;
+      font-size: 13px;
     }
 
     .receipt-row {
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
-      font-size: 13px;
     }
 
-    .receipt-row:last-child {
-      margin-bottom: 0;
-    }
+    .receipt-row:last-child { margin-bottom: 0; }
 
-    .done-btn {
+    .btn-done {
       margin-top: 24px;
       background: white;
       color: #0fa958;
       border: none;
-      padding: 12px 40px;
+      padding: 12px 42px;
       border-radius: 25px;
-      font-size: 16px;
-      font-weight: 700;
+      font-weight: bold;
+      font-size: 15px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- Hidden Inputs & Canvases -->
-  <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="saveProfilePic(this)">
-  <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleGalleryQR(this)">
-  <canvas id="hiddenCanvas" style="display:none;"></canvas>
+  <!-- হিডেন ইনপুট -->
+  <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" style="display:none;" onchange="handleQRImage(this)">
+  <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleQRImage(this)">
+  <input type="file" id="profileInput" accept="image/*" style="display:none;" onchange="handleProfilePic(this)">
+  <canvas id="qrCanvas" style="display:none;"></canvas>
 
   <div class="app-layout">
-    <!-- Header -->
+    <!-- হেডার -->
     <div class="header">
-      <div class="profile-section">
-        <div class="avatar-wrapper" onclick="openProfilePicker()">
-          <div class="avatar">
-            <span id="avatarText">SA</span>
-            <img id="avatarImg" alt="Profile">
-          </div>
-          <div class="avatar-badge"><i class="fa-solid fa-camera"></i></div>
+      <div class="profile-section" onclick="openProfilePicker()">
+        <div class="avatar">
+          <span id="avatarTxt">SA</span>
+          <img id="avatarImg" alt="DP">
         </div>
         <div class="user-info">
           <h4>Saving Account</h4>
@@ -483,232 +387,229 @@
     </div>
 
     <div class="container">
-      <!-- Wallet Card -->
+      <!-- ব্যালেন্স কার্ড -->
       <div class="wallet-card">
         <div class="wallet-title">Available Balance</div>
-        <div class="wallet-balance" id="walletBal">₹5,49,935.00</div>
+        <div class="wallet-balance" id="displayBalance">₹5,49,634.00</div>
         <div class="upi-id">UPI ID: saddam424@ybl</div>
       </div>
 
-      <!-- Actions -->
+      <!-- অ্যাকশন গ্রিড -->
       <div>
         <div class="section-title">Transfer Money</div>
         <div class="action-grid">
-          <div class="action-item" onclick="openPaymentBox('Mobile Number', 'Enter Mobile Number')">
+          <div class="action-item" onclick="openPayBox('Mobile Number-এ টাকা পাঠান', 'মোবাইল নম্বর লিখুন')">
             <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
-            <span class="action-label">To Mobile Number</span>
+            <span class="action-label">To Mobile</span>
           </div>
-          <div class="action-item" onclick="openPaymentBox('Bank Account', 'Enter Account or UPI ID')">
+          <div class="action-item" onclick="openPayBox('Bank Account-এ টাকা পাঠান', 'অ্যাকাউন্ট বা UPI দিন')">
             <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
-            <span class="action-label">To Bank & Self A/c</span>
+            <span class="action-label">To Bank</span>
           </div>
-          <div class="action-item" onclick="startLiveCamera()">
+          <div class="action-item" onclick="startScannerFlow()">
             <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
-            <span class="action-label">Scan QR Camera</span>
+            <span class="action-label">Scan QR</span>
           </div>
-          <div class="action-item" onclick="checkBalanceAlert()">
+          <div class="action-item" onclick="showBankBalance()">
             <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-            <span class="action-label">Check Balance</span>
+            <span class="action-label">Check Bal</span>
           </div>
         </div>
       </div>
 
-      <!-- Big Action Buttons -->
-      <div class="button-group">
-        <button class="scan-btn" onclick="startLiveCamera()">
+      <!-- বড় বাটন -->
+      <div class="btn-group">
+        <button type="button" class="custom-btn" onclick="startScannerFlow()">
           <i class="fa-solid fa-camera"></i> সরাসরি ক্যামেরা দিয়ে Scan & Pay
         </button>
-        <button class="scan-btn gallery-btn" onclick="openGalleryPicker()">
-          <i class="fa-solid fa-image"></i> গ্যালারি থেকে QR কোড সিলেক্ট করুন
+        <button type="button" class="custom-btn custom-btn-alt" onclick="openGalleryPicker()">
+          <i class="fa-solid fa-image"></i> গ্যালারি থেকে QR কোড বাছুন
         </button>
       </div>
 
-      <!-- History -->
+      <!-- হিস্ট্রি -->
       <div>
         <div class="section-title">Recent Transactions</div>
-        <div class="history-card" id="historyList">
+        <div class="history-card" id="historyContainer">
           <div class="txn-item">
             <div>
-              <div class="txn-title">Paid to Saddam Khan</div>
-              <div class="txn-time">State Bank • Today, 11:49 AM</div>
+              <div class="txn-title">Paid to 9230585424</div>
+              <div class="txn-time">State Bank • Today, 01:57 PM</div>
             </div>
-            <div class="txn-amount txn-red">-₹65.00</div>
+            <div class="txn-amount">-₹1.00</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Camera Live QR Scanner Modal -->
-  <div class="modal" id="cameraModal">
-    <div class="modal-content">
-      <h3>QR কোড স্ক্যান করুন</h3>
-      <div id="scannerContainer">
-        <video id="videoView" playsinline autoplay muted></video>
-        <div class="scanner-crosshair"></div>
-        <div class="scanner-line"></div>
-        <span id="cameraNotice" style="position:absolute; color:#fff; font-size:12px; background:rgba(0,0,0,0.7); padding:6px 12px; border-radius:6px;">ক্যামেরা অন হচ্ছে...</span>
+  <!-- ক্যামেরা উইন্ডো -->
+  <div class="modal-overlay" id="cameraModal">
+    <div class="modal-box">
+      <h3>QR কোড সামনে ধরুন</h3>
+      <div id="scannerBox">
+        <video id="liveVideo" playsinline autoplay muted></video>
+        <div class="scanner-target"></div>
       </div>
-      <button class="modal-btn modal-close" onclick="stopLiveCamera()">Cancel</button>
+      <button type="button" class="btn-submit" onclick="triggerDirectCamera()">ফোনের ক্যামেরা খুলুন</button>
+      <button type="button" class="btn-cancel" onclick="stopScanner()">বন্ধ করুন</button>
     </div>
   </div>
 
-  <!-- Payment Modal -->
-  <div class="modal" id="paymentModal">
-    <div class="modal-content">
-      <h3 id="payModalTitle">Pay Money</h3>
-      <input type="text" id="payeeDetails" class="modal-input" placeholder="Merchant Name / UPI ID">
-      <input type="number" id="payAmount" class="modal-input" placeholder="₹ টাকার পরিমাণ দিন" inputmode="decimal">
-      <button class="modal-btn" onclick="executePayment()">Proceed to Pay</button>
-      <button class="modal-btn modal-close" onclick="closeModal('paymentModal')">Cancel</button>
+  <!-- পেমেন্ট উইন্ডো -->
+  <div class="modal-overlay" id="payModal">
+    <div class="modal-box">
+      <h3 id="modalHeading">টাকা পাঠান</h3>
+      <input type="text" id="inputPayee" placeholder="নাম বা UPI দিন">
+      <input type="number" id="inputAmt" placeholder="টাকার পরিমাণ (₹)" inputmode="decimal">
+      <button type="button" class="btn-submit" onclick="executePayment()">Proceed to Pay</button>
+      <button type="button" class="btn-cancel" onclick="closePayBox()">Cancel</button>
     </div>
   </div>
 
-  <!-- Custom Alert Modal -->
-  <div class="modal" id="alertModal">
-    <div class="modal-content">
-      <h3 id="alertTitle" style="color:#0fa958;">Notice</h3>
-      <p id="alertMessage" style="color:#ccc; font-size:14px; margin: 15px 0; line-height: 1.5;"></p>
-      <button class="modal-btn" onclick="closeModal('alertModal')">OK</button>
+  <!-- ব্যালেন্স উইন্ডো -->
+  <div class="modal-overlay" id="balModal">
+    <div class="modal-box">
+      <h3 style="color:#0fa958;">Bank Balance</h3>
+      <p style="color:#ddd; margin:14px 0; font-size:14px; line-height: 1.5;" id="balMsg"></p>
+      <button type="button" class="btn-submit" onclick="document.getElementById('balModal').style.display='none'">ঠিক আছে</button>
     </div>
   </div>
 
-  <!-- Success Screen -->
-  <div id="successScreen">
-    <div class="success-circle"><i class="fa-solid fa-check"></i></div>
-    <h2 style="font-size: 22px; margin-bottom: 6px;">Payment Successful</h2>
-    <h1 style="font-size: 36px; margin-bottom: 6px;" id="receiptAmount">₹0.00</h1>
-    <p style="opacity: 0.9;" id="receiptPayee">Paid to Merchant</p>
+  <!-- সফল স্ক্রিন -->
+  <div id="successModal">
+    <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+    <h2>Payment Successful</h2>
+    <h1 style="font-size:32px; margin:8px 0;" id="successAmt">₹0.00</h1>
+    <p id="successTo" style="opacity:0.9;">Paid successfully</p>
 
-    <div class="receipt-box">
+    <div class="receipt">
       <div class="receipt-row">
         <span>Transaction ID</span>
-        <strong id="receiptTxnId">T2600...</strong>
+        <strong id="txnIdText">T260...</strong>
       </div>
       <div class="receipt-row">
         <span>Debited From</span>
         <strong>State Bank (•••• 5424)</strong>
       </div>
       <div class="receipt-row">
-        <span>Time</span>
-        <strong id="receiptTime">Just now</strong>
+        <span>Date & Time</span>
+        <strong id="txnTimeText">Now</strong>
       </div>
     </div>
 
-    <button class="done-btn" onclick="closeModal('successScreen')">Done</button>
+    <button type="button" class="btn-done" onclick="document.getElementById('successModal').style.display='none'">Done</button>
   </div>
 
-  <!-- JavaScript Engine -->
   <script>
-    var myBalance = 549935.00;
-    var streamTrack = null;
-    var isScanning = false;
+    var currentBalance = 549634.00;
+    var cameraStream = null;
+    var scanActive = false;
 
-    // ভাইব্রেশন (স্পর্শ অনুভূতি)
-    function triggerVibration(pattern) {
-      if ('vibrate' in navigator) {
-        try { navigator.vibrate(pattern || 40); } catch(e){}
+    function safeVibrate() {
+      try {
+        if (navigator && navigator.vibrate) navigator.vibrate(35);
+      } catch(e){}
+    }
+
+    function updateBalanceUI() {
+      document.getElementById('displayBalance').innerText = '₹' + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+    function openPayBox(title, placeholder) {
+      safeVibrate();
+      document.getElementById('modalHeading').innerText = title;
+      var payee = document.getElementById('inputPayee');
+      payee.placeholder = placeholder;
+      payee.value = '';
+      document.getElementById('inputAmt').value = '';
+      document.getElementById('payModal').style.display = 'flex';
+    }
+
+    function closePayBox() {
+      document.getElementById('payModal').style.display = 'none';
+    }
+
+    function showBankBalance() {
+      safeVibrate();
+      document.getElementById('balMsg').innerText = 'State Bank of India (•••• 5424)\nউপলব্ধ ব্যালেন্স: ₹' + currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('balModal').style.display = 'flex';
+    }
+
+    function openProfilePicker() {
+      safeVibrate();
+      document.getElementById('profileInput').click();
+    }
+
+    function handleProfilePic(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = document.getElementById('avatarImg');
+          var txt = document.getElementById('avatarTxt');
+          img.src = e.target.result;
+          img.style.display = 'block';
+          txt.style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
       }
     }
 
-    window.showAlert = function(title, text) {
-      triggerVibration(50);
-      document.getElementById('alertTitle').innerText = title;
-      document.getElementById('alertMessage').innerText = text;
-      document.getElementById('alertModal').style.display = 'flex';
-    };
-
-    window.closeModal = function(id) {
-      triggerVibration(30);
-      var el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-      if (id === 'cameraModal') window.stopLiveCamera();
-    };
-
-    window.checkBalanceAlert = function() {
-      window.showAlert("Bank Balance", "State Bank of India •••• 5424\nউপলব্ধ ব্যালেন্স: ₹" + myBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
-    };
-
-    window.openProfilePicker = function() {
-      triggerVibration(40);
-      document.getElementById('profilePicInput').click();
-    };
-
-    window.saveProfilePic = function(input) {
-      if (input && input.files && input.files[0]) {
-        var r = new FileReader();
-        r.onload = function(e) {
-          var base64 = e.target.result;
-          try { localStorage.setItem('phonepe_user_pic', base64); } catch(err){}
-          window.displayAvatar(base64);
-        };
-        r.readAsDataURL(input.files[0]);
-      }
-    };
-
-    window.displayAvatar = function(url) {
-      var img = document.getElementById('avatarImg');
-      var txt = document.getElementById('avatarText');
-      if (img && txt) {
-        img.src = url;
-        img.style.display = 'block';
-        txt.style.display = 'none';
-      }
-    };
-
-    /* ===== লাইভ ক্যামেরা ও QR ডিকোড ইঞ্জিন ===== */
-    window.startLiveCamera = function() {
-      triggerVibration(40);
-      document.getElementById('cameraModal').style.display = 'flex';
-      var video = document.getElementById('videoView');
-      var notice = document.getElementById('cameraNotice');
-      notice.style.display = 'block';
-      notice.innerText = "ক্যামেরা অন হচ্ছে...";
-
+    function startScannerFlow() {
+      safeVibrate();
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false
+          video: { facingMode: { ideal: "environment" } }
         })
         .then(function(stream) {
-          streamTrack = stream;
+          cameraStream = stream;
+          var video = document.getElementById('liveVideo');
           video.srcObject = stream;
           video.setAttribute('playsinline', true);
-          video.play();
-          notice.style.display = 'none';
-          isScanning = true;
+          video.play().catch(function(){});
+          document.getElementById('cameraModal').style.display = 'flex';
+          scanActive = true;
           requestAnimationFrame(scanVideoFrame);
         })
         .catch(function(err) {
-          notice.innerText = "ক্যামেরা পারমিশন পাওয়া যায়নি। গ্যালারি দিয়ে চেষ্টা করুন।";
+          triggerDirectCamera();
         });
       } else {
-        notice.innerText = "এই ব্রাউজারে ক্যামেরা পারমিশন নেই।";
+        triggerDirectCamera();
       }
-    };
+    }
+
+    function triggerDirectCamera() {
+      stopScanner();
+      document.getElementById('cameraDirectInput').click();
+    }
+
+    function stopScanner() {
+      scanActive = false;
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(function(t) { t.stop(); });
+        cameraStream = null;
+      }
+      document.getElementById('cameraModal').style.display = 'none';
+    }
 
     function scanVideoFrame() {
-      if (!isScanning) return;
-      var video = document.getElementById('videoView');
-      var canvas = document.getElementById('hiddenCanvas');
+      if (!scanActive) return;
+      var video = document.getElementById('liveVideo');
+      var canvas = document.getElementById('qrCanvas');
       var ctx = canvas.getContext('2d');
 
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        // jsQR লাইব্রেরি দিয়ে ফ্রেম স্ক্যান
         if (typeof jsQR !== 'undefined') {
-          var code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: "dontInvert"
-          });
-
+          var code = jsQR(imgData.data, imgData.width, imgData.height);
           if (code && code.data) {
-            triggerVibration([80, 50, 80]);
-            window.stopLiveCamera();
-            window.parseAndFillQR(code.data);
+            stopScanner();
+            parseQRString(code.data);
             return;
           }
         }
@@ -716,37 +617,83 @@
       requestAnimationFrame(scanVideoFrame);
     }
 
-    window.stopLiveCamera = function() {
-      isScanning = false;
-      if (streamTrack) {
-        try {
-          streamTrack.getTracks().forEach(function(t) { t.stop(); });
-        } catch(e){}
-        streamTrack = null;
-      }
-      document.getElementById('cameraModal').style.display = 'none';
-    };
-
-    /* ===== গ্যালারি থেকে QR স্ক্যান করা ===== */
-    window.openGalleryPicker = function() {
-      triggerVibration(40);
+    function openGalleryPicker() {
+      safeVibrate();
       document.getElementById('galleryInput').click();
-    };
+    }
 
-    window.handleGalleryQR = function(input) {
-      if (!input || !input.files || !input.files[0]) return;
-      var file = input.files[0];
+    function handleQRImage(input) {
+      if (!input.files || !input.files[0]) return;
       var reader = new FileReader();
-
       reader.onload = function(e) {
         var img = new Image();
         img.onload = function() {
-          var canvas = document.getElementById('hiddenCanvas');
+          var canvas = document.getElementById('qrCanvas');
           var ctx = canvas.getContext('2d');
           canvas.width = img.width;
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0, img.width, img.height);
-          var imageData = ctx.getImageData(0, 0, img.width, img.height);
+          var imgData = ctx.getImageData(0, 0, img.width, img.height);
 
           if (typeof jsQR !== 'undefined') {
-         
+            var code = jsQR(imgData.data, imgData.width, imgData.height);
+            if (code && code.data) {
+              parseQRString(code.data);
+              input.value = '';
+              return;
+            }
+          }
+          alert("ছবিটিতে কোনো স্পষ্ট UPI QR পাওয়া যায়নি। প্রাপকের নাম লিখুন।");
+          openPayBox('QR স্ক্যান পেমেন্ট', 'দোকানের নাম বা UPI দিন');
+          input.value = '';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function parseQRString(qrData) {
+      safeVibrate();
+      var name = "";
+      var amount = "";
+
+      if (qrData.indexOf("upi://pay") !== -1) {
+        try {
+          var cleanQuery = qrData.substring(qrData.indexOf("?") + 1);
+          var params = new URLSearchParams(cleanQuery);
+          name = params.get('pn') ? decodeURIComponent(params.get('pn')).replace(/\+/g, " ") : (params.get('pa') || "");
+          amount = params.get('am') || "";
+        } catch(e) {
+          name = qrData;
+        }
+      } else {
+        name = qrData;
+      }
+
+      openPayBox('QR স্ক্যান পেমেন্ট', 'দোকানের নাম বা UPI দিন');
+      document.getElementById('inputPayee').value = name || "Merchant Store";
+      if (amount) document.getElementById('inputAmt').value = amount;
+    }
+
+    function executePayment() {
+      var name = document.getElementById('inputPayee').value.trim();
+      var amt = parseFloat(document.getElementById('inputAmt').value);
+
+      if (!name) { alert("দয়া করে নাম বা UPI লিখুন"); return; }
+      if (isNaN(amt) || amt <= 0) { alert("সঠিক টাকার পরিমাণ দিন"); return; }
+      if (amt > currentBalance) { alert("আপনার অ্যাকাউন্টে পর্যাপ্ত টাকা নেই!"); return; }
+
+      currentBalance -= amt;
+      updateBalanceUI();
+      closePayBox();
+
+      try {
+        if ('speechSynthesis' in window) {
+          var text = amt + " টাকা সফলভাবে দেওয়া হয়েছে";
+          var speech = new SpeechSynthesisUtterance(text);
+          speech.lang = 'bn-IN';
+          window.speechSynthesis.speak(speech);
+        }
+      } catch(e){}
+
+ 
