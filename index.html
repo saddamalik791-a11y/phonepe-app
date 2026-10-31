@@ -1,714 +1,752 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1e1131">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>PhonePe Official</title>
 
-<style>
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- সুপার-ফাস্ট অফলাইন QR স্ক্যানার ইঞ্জিন -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
-  /* অ্যান্ড্রয়েড অ্যাপের মতো ফুলস্ক্রিন বডি */
-  html, body {
-    width: 100%;
-    min-height: 100vh;
-    background-color: #121212;
-    color: #fff;
-    margin: 0;
-    padding: 0;
-  }
-
-  .app-layout {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding-bottom: 40px;
-  }
-
-  .header {
-    background: #1e1131;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #2d1a45;
-  }
-
-  .profile-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .avatar-wrapper {
-    position: relative;
-    cursor: pointer;
-  }
-
-  .avatar {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: #5f259f;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    border: 2px solid #8e44ad;
-    overflow: hidden;
-    font-size: 16px;
-  }
-
-  .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-  }
-
-  .avatar-badge {
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
-    background: #0fa958;
-    color: white;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-  }
-
-  .user-info h4 {
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  .user-info p {
-    font-size: 12px;
-    color: #aaa;
-  }
-
-  .badge {
-    background: #2a1b40;
-    color: #b580e2;
-    border: 1px solid #5f259f;
-    padding: 5px 12px;
-    border-radius: 14px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  .container {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: 1;
-  }
-
-  .wallet-card {
-    background: linear-gradient(135deg, #4a154b, #2b0844);
-    border-radius: 18px;
-    padding: 20px;
-    border: 1px solid #48236b;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-  }
-
-  .wallet-title {
-    font-size: 13px;
-    color: #ccc;
-  }
-
-  .wallet-balance {
-    font-size: 32px;
-    font-weight: 700;
-    margin: 8px 0;
-    color: #fff;
-  }
-
-  .upi-id {
-    font-size: 12px;
-    color: #bbb;
-  }
-
-  .section-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #aaa;
-    margin-bottom: 10px;
-  }
-
-  .action-grid {
-    background: #1c1c1e;
-    border-radius: 16px;
-    padding: 16px 8px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
-
-  .action-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-  }
-
-  .action-icon {
-    width: 48px;
-    height: 48px;
-    background: #39195b;
-    color: #c48df5;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin-bottom: 8px;
-  }
-
-  .action-label {
-    font-size: 11px;
-    line-height: 1.2;
-    color: #bbb;
-  }
-
-  .scan-btn {
-    background: #5f259f;
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 15px;
-    font-size: 16px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    width: 100%;
-  }
-
-  .history-card {
-    background: #1c1c1e;
-    border-radius: 16px;
-    padding: 14px 16px;
-  }
-
-  .txn-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #292929;
-  }
-
-  .txn-item:last-child {
-    border-bottom: none;
-  }
-
-  .txn-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #eee;
-  }
-
-  .txn-time {
-    font-size: 11px;
-    color: #888;
-    margin-top: 3px;
-  }
-
-  .txn-amount {
-    font-size: 15px;
-    font-weight: 700;
-  }
-
-  .txn-green {
-    color: #0fa958;
-  }
-
-  .txn-red {
-    color: #e53935;
-  }
-
-  /* Modal */
-  .modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 99999;
-  }
-
-  .modal-content {
-    background: #242426;
-    border-radius: 18px;
-    padding: 22px;
-    width: 100%;
-    max-width: 360px;
-  }
-
-  .modal-content h3 {
-    font-size: 17px;
-    color: #b580e2;
-    margin-bottom: 15px;
-    text-align: center;
-  }
-
-  .modal-input {
-    width: 100%;
-    padding: 12px;
-    background: #18181a;
-    border: 1px solid #444;
-    border-radius: 10px;
-    font-size: 15px;
-    color: #fff;
-    margin-bottom: 12px;
-    outline: none;
-  }
-
-  .modal-btn {
-    width: 100%;
-    padding: 13px;
-    background: #5f259f;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .modal-gallery-btn {
-    background: #39195b;
-    color: #dfbaff;
-  }
-
-  .modal-close {
-    background: #3a3a3c;
-    color: #ccc;
-  }
-
-  #scannerContainer {
-    position: relative;
-    width: 100%;
-    height: 200px;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-
-  #video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Success Screen */
-  #successScreen {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #0fa958;
-    color: white;
-    z-index: 100000;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    text-align: center;
-  }
-
-  .success-circle {
-    width: 85px;
-    height: 85px;
-    background: white;
-    color: #0fa958;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 42px;
-    margin-bottom: 16px;
-  }
-
-  .receipt-box {
-    background: white;
-    color: #222;
-    border-radius: 16px;
-    padding: 18px;
-    width: 100%;
-    max-width: 320px;
-    margin-top: 18px;
-    text-align: left;
-  }
-
-  .receipt-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 13px;
-  }
-
-  .receipt-row:last-child {
-    margin-bottom: 0;
-  }
-
-  .done-btn {
-    margin-top: 22px;
-    background: white;
-    color: #0fa958;
-    border: none;
-    padding: 12px 36px;
-    border-radius: 25px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-</style>
-
-<!-- Hidden File Inputs -->
-<input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="saveProfilePic(this)">
-<input type="file" id="qrGalleryInput" accept="image/*" style="display:none;" onchange="scanFromGalleryFile(this)">
-
-<div class="app-layout">
-  <!-- Header -->
-  <div class="header">
-    <div class="profile-section">
-      <div class="avatar-wrapper" onclick="document.getElementById('profilePicInput').click()" title="Change Profile">
-        <div class="avatar">
-          <span id="avatarText">SA</span>
-          <img id="avatarImg" alt="Profile">
-        </div>
-        <div class="avatar-badge"><i class="fa-solid fa-camera"></i></div>
-      </div>
-      <div class="user-info">
-        <h4>Saving Account</h4>
-        <p>State Bank •••• 5424</p>
-      </div>
-    </div>
-    <div class="badge">Live Sync</div>
-  </div>
-
-  <div class="container">
-    <!-- Wallet Balance -->
-    <div class="wallet-card">
-      <div class="wallet-title">Available Balance</div>
-      <div class="wallet-balance" id="walletBal">₹550,000.00</div>
-      <div class="upi-id">UPI ID: saddam424@ybl</div>
-    </div>
-
-    <!-- Actions -->
-    <div>
-      <div class="section-title">Transfer Money</div>
-      <div class="action-grid">
-        <div class="action-item" onclick="openSendMoney('Mobile Number', 'Enter Mobile Number')">
-          <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
-          <span class="action-label">To Mobile Number</span>
-        </div>
-        <div class="action-item" onclick="openSendMoney('Bank Account', 'Enter Account or UPI ID')">
-          <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
-          <span class="action-label">To Bank & Self A/c</span>
-        </div>
-        <div class="action-item" onclick="openQRScanner()">
-          <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
-          <span class="action-label">Scan Any QR Code</span>
-        </div>
-        <div class="action-item" onclick="showBalanceAlert()">
-          <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-          <span class="action-label">Check Balance</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Big Scan Button -->
-    <button class="scan-btn" onclick="openQRScanner()">
-      <i class="fa-solid fa-camera"></i> Scan & Pay Any QR
-    </button>
-
-    <!-- History -->
-    <div>
-      <div class="section-title">Recent Transactions</div>
-      <div class="history-card" id="historyList">
-        <div class="txn-item">
-          <div>
-            <div class="txn-title">Merchant Cash-In</div>
-            <div class="txn-time">State Bank • Initial Load</div>
-          </div>
-          <div class="txn-amount txn-green">+₹500.00</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- QR Scanner Modal -->
-<div class="modal" id="scannerModal">
-  <div class="modal-content">
-    <h3>QR Scanner</h3>
-    <div id="scannerContainer">
-      <video id="video" playsinline></video>
-      <canvas id="canvas" style="display:none;"></canvas>
-    </div>
-
-    <!-- Gallery Select Button -->
-    <button class="modal-btn modal-gallery-btn" onclick="document.getElementById('qrGalleryInput').click()">
-      <i class="fa-solid fa-image"></i> গ্যালারি থেকে QR দিন
-    </button>
-    <button class="modal-btn modal-close" onclick="closeQRScanner()">Cancel</button>
-  </div>
-</div>
-
-<!-- Payment Modal -->
-<div class="modal" id="paymentModal">
-  <div class="modal-content">
-    <h3 id="payModalTitle">Pay Money</h3>
-    <input type="text" id="payeeDetails" class="modal-input" placeholder="Enter Name or UPI ID">
-    <input type="number" id="payAmount" class="modal-input" placeholder="₹ Enter Amount">
-    <button class="modal-btn" onclick="submitPayment()">Proceed to Pay</button>
-    <button class="modal-btn modal-close" onclick="document.getElementById('paymentModal').style.display='none'">Cancel</button>
-  </div>
-</div>
-
-<!-- Success Screen -->
-<div id="successScreen">
-  <div class="success-circle"><i class="fa-solid fa-check"></i></div>
-  <h2 style="font-size: 22px; margin-bottom: 6px;">Payment Successful</h2>
-  <h1 style="font-size: 36px; margin-bottom: 6px;" id="receiptAmount">₹0.00</h1>
-  <p style="opacity: 0.9;" id="receiptPayee">Paid to Successfull</p>
-
-  <div class="receipt-box">
-    <div class="receipt-row">
-      <span>Transaction ID</span>
-      <strong id="receiptTxnId">T2600...</strong>
-    </div>
-    <div class="receipt-row">
-      <span>Debited From</span>
-      <strong>State Bank (•••• 5424)</strong>
-    </div>
-    <div class="receipt-row">
-      <span>Time</span>
-      <strong id="receiptTime">Just now</strong>
-    </div>
-  </div>
-
-  <button class="done-btn" onclick="document.getElementById('successScreen').style.display='none'">Done</button>
-</div>
-
-<script>
-  var myBalance = 50000.00;
-  var camStream = null;
-  var isScanning = false;
-
-  // ১. প্রোফাইল ছবি সেভ ও লোড
-  function saveProfilePic(input) {
-    if (input.files && input.files[0]) {
-      var r = new FileReader();
-      r.onload = function(e) {
-        var base64 = e.target.result;
-        try { localStorage.setItem('p_pic', base64); } catch(err){}
-        applyPic(base64);
-      };
-      r.readAsDataURL(input.files[0]);
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
     }
-  }
 
-  function applyPic(url) {
-    document.getElementById('avatarImg').src = url;
-    document.getElementById('avatarImg').style.display = 'block';
-    document.getElementById('avatarText').style.display = 'none';
-  }
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: #121212;
+      color: #fff;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
 
-  // ২. প্রচণ্ড জোরালো সাউন্ড ও লাউড ঘোষণা
-  function makeLoudSound(amt) {
-    try {
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) {
-        var ctx = new AC();
-        var osc = ctx.createOscillator();
-        var gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(750, ctx.currentTime);
-        osc.frequency.setValueAtTime(1050, ctx.currentTime + 0.15);
-        gain.gain.setValueAtTime(1.0, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.5);
+    .app-layout {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 30px;
+    }
+
+    .header {
+      background: #1e1131;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #2d1a45;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .profile-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #5f259f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      border: 2px solid #8e44ad;
+      overflow: hidden;
+      font-size: 16px;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .avatar-badge {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      background: #0fa958;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border: 1.5px solid #1e1131;
+    }
+
+    .user-info h4 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .user-info p {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
+    .badge {
+      background: #2a1b40;
+      color: #b580e2;
+      border: 1px solid #5f259f;
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .container {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .wallet-card {
+      background: linear-gradient(135deg, #4a154b, #2b0844);
+      border-radius: 18px;
+      padding: 20px 18px;
+      border: 1px solid #48236b;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    .wallet-title {
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    .wallet-balance {
+      font-size: 32px;
+      font-weight: 800;
+      margin: 8px 0;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .upi-id {
+      font-size: 12px;
+      color: #bbb;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #aaa;
+      margin-bottom: 10px;
+    }
+
+    .action-grid {
+      background: #1c1c1e;
+      border-radius: 16px;
+      padding: 16px 8px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .action-item:active {
+      transform: scale(0.92);
+      opacity: 0.8;
+    }
+
+    .action-icon {
+      width: 48px;
+      height: 48px;
+      background: #39195b;
+      color: #c48df5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+
+    .action-label {
+      font-size: 11px;
+      line-height: 1.25;
+      color: #bbb;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .scan-btn {
+      background: #5f259f;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .scan-btn:active {
+      background: #4a1d7c;
+      transform: scale(0.98);
+    }
+
+    .gallery-btn {
+      background: #2d1847;
+      border: 1px solid #5f259f;
+      color: #dfbaff;
+    }
+
+    .history-card {
+      background: #1c1c1e;
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+
+    .txn-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #292929;
+    }
+
+    .txn-item:last-child {
+      border-bottom: none;
+    }
+
+    .txn-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #eee;
+    }
+
+    .txn-time {
+      font-size: 11px;
+      color: #888;
+      margin-top: 3px;
+    }
+
+    .txn-amount {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .txn-red {
+      color: #e53935;
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 99999;
+    }
+
+    .modal-content {
+      background: #242426;
+      border-radius: 20px;
+      padding: 22px;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    .modal-content h3 {
+      font-size: 18px;
+      color: #b580e2;
+      margin-bottom: 15px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 13px;
+      background: #18181a;
+      border: 1px solid #444;
+      border-radius: 10px;
+      font-size: 15px;
+      color: #fff;
+      margin-bottom: 12px;
+      outline: none;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .modal-input:focus {
+      border-color: #5f259f;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 14px;
+      background: #5f259f;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .modal-btn:active {
+      background: #4a1d7c;
+    }
+
+    .modal-close {
+      background: #3a3a3c;
+      color: #ccc;
+    }
+
+    #scannerContainer {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #videoView {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .scanner-crosshair {
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      border: 2px solid #0fa958;
+      border-radius: 14px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+    }
+
+    .scanner-line {
+      position: absolute;
+      width: 160px;
+      height: 2px;
+      background: #0fa958;
+      box-shadow: 0 0 8px #0fa958;
+      top: 40px;
+      animation: scanAnim 2s infinite ease-in-out alternate;
+    }
+
+    @keyframes scanAnim {
+      0% { top: 45px; }
+      100% { top: 195px; }
+    }
+
+    /* Success Screen */
+    #successScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0fa958;
+      color: white;
+      z-index: 100000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .success-circle {
+      width: 85px;
+      height: 85px;
+      background: white;
+      color: #0fa958;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      margin-bottom: 16px;
+      animation: popIn 0.35s ease-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.4); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .receipt-box {
+      background: white;
+      color: #222;
+      border-radius: 16px;
+      padding: 18px;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 18px;
+      text-align: left;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .receipt-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .done-btn {
+      margin-top: 24px;
+      background: white;
+      color: #0fa958;
+      border: none;
+      padding: 12px 40px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden Inputs & Canvases -->
+  <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="saveProfilePic(this)">
+  <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleGalleryQR(this)">
+  <canvas id="hiddenCanvas" style="display:none;"></canvas>
+
+  <div class="app-layout">
+    <!-- Header -->
+    <div class="header">
+      <div class="profile-section">
+        <div class="avatar-wrapper" onclick="openProfilePicker()">
+          <div class="avatar">
+            <span id="avatarText">SA</span>
+            <img id="avatarImg" alt="Profile">
+          </div>
+          <div class="avatar-badge"><i class="fa-solid fa-camera"></i></div>
+        </div>
+        <div class="user-info">
+          <h4>Saving Account</h4>
+          <p>State Bank •••• 5424</p>
+        </div>
+      </div>
+      <div class="badge">Live Sync</div>
+    </div>
+
+    <div class="container">
+      <!-- Wallet Card -->
+      <div class="wallet-card">
+        <div class="wallet-title">Available Balance</div>
+        <div class="wallet-balance" id="walletBal">₹5,49,935.00</div>
+        <div class="upi-id">UPI ID: saddam424@ybl</div>
+      </div>
+
+      <!-- Actions -->
+      <div>
+        <div class="section-title">Transfer Money</div>
+        <div class="action-grid">
+          <div class="action-item" onclick="openPaymentBox('Mobile Number', 'Enter Mobile Number')">
+            <div class="action-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+            <span class="action-label">To Mobile Number</span>
+          </div>
+          <div class="action-item" onclick="openPaymentBox('Bank Account', 'Enter Account or UPI ID')">
+            <div class="action-icon"><i class="fa-solid fa-building-columns"></i></div>
+            <span class="action-label">To Bank & Self A/c</span>
+          </div>
+          <div class="action-item" onclick="startLiveCamera()">
+            <div class="action-icon"><i class="fa-solid fa-qrcode"></i></div>
+            <span class="action-label">Scan QR Camera</span>
+          </div>
+          <div class="action-item" onclick="checkBalanceAlert()">
+            <div class="action-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+            <span class="action-label">Check Balance</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Big Action Buttons -->
+      <div class="button-group">
+        <button class="scan-btn" onclick="startLiveCamera()">
+          <i class="fa-solid fa-camera"></i> সরাসরি ক্যামেরা দিয়ে Scan & Pay
+        </button>
+        <button class="scan-btn gallery-btn" onclick="openGalleryPicker()">
+          <i class="fa-solid fa-image"></i> গ্যালারি থেকে QR কোড সিলেক্ট করুন
+        </button>
+      </div>
+
+      <!-- History -->
+      <div>
+        <div class="section-title">Recent Transactions</div>
+        <div class="history-card" id="historyList">
+          <div class="txn-item">
+            <div>
+              <div class="txn-title">Paid to Saddam Khan</div>
+              <div class="txn-time">State Bank • Today, 11:49 AM</div>
+            </div>
+            <div class="txn-amount txn-red">-₹65.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Camera Live QR Scanner Modal -->
+  <div class="modal" id="cameraModal">
+    <div class="modal-content">
+      <h3>QR কোড স্ক্যান করুন</h3>
+      <div id="scannerContainer">
+        <video id="videoView" playsinline autoplay muted></video>
+        <div class="scanner-crosshair"></div>
+        <div class="scanner-line"></div>
+        <span id="cameraNotice" style="position:absolute; color:#fff; font-size:12px; background:rgba(0,0,0,0.7); padding:6px 12px; border-radius:6px;">ক্যামেরা অন হচ্ছে...</span>
+      </div>
+      <button class="modal-btn modal-close" onclick="stopLiveCamera()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="modal" id="paymentModal">
+    <div class="modal-content">
+      <h3 id="payModalTitle">Pay Money</h3>
+      <input type="text" id="payeeDetails" class="modal-input" placeholder="Merchant Name / UPI ID">
+      <input type="number" id="payAmount" class="modal-input" placeholder="₹ টাকার পরিমাণ দিন" inputmode="decimal">
+      <button class="modal-btn" onclick="executePayment()">Proceed to Pay</button>
+      <button class="modal-btn modal-close" onclick="closeModal('paymentModal')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Custom Alert Modal -->
+  <div class="modal" id="alertModal">
+    <div class="modal-content">
+      <h3 id="alertTitle" style="color:#0fa958;">Notice</h3>
+      <p id="alertMessage" style="color:#ccc; font-size:14px; margin: 15px 0; line-height: 1.5;"></p>
+      <button class="modal-btn" onclick="closeModal('alertModal')">OK</button>
+    </div>
+  </div>
+
+  <!-- Success Screen -->
+  <div id="successScreen">
+    <div class="success-circle"><i class="fa-solid fa-check"></i></div>
+    <h2 style="font-size: 22px; margin-bottom: 6px;">Payment Successful</h2>
+    <h1 style="font-size: 36px; margin-bottom: 6px;" id="receiptAmount">₹0.00</h1>
+    <p style="opacity: 0.9;" id="receiptPayee">Paid to Merchant</p>
+
+    <div class="receipt-box">
+      <div class="receipt-row">
+        <span>Transaction ID</span>
+        <strong id="receiptTxnId">T2600...</strong>
+      </div>
+      <div class="receipt-row">
+        <span>Debited From</span>
+        <strong>State Bank (•••• 5424)</strong>
+      </div>
+      <div class="receipt-row">
+        <span>Time</span>
+        <strong id="receiptTime">Just now</strong>
+      </div>
+    </div>
+
+    <button class="done-btn" onclick="closeModal('successScreen')">Done</button>
+  </div>
+
+  <!-- JavaScript Engine -->
+  <script>
+    var myBalance = 549935.00;
+    var streamTrack = null;
+    var isScanning = false;
+
+    // ভাইব্রেশন (স্পর্শ অনুভূতি)
+    function triggerVibration(pattern) {
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(pattern || 40); } catch(e){}
       }
-    } catch(e){}
+    }
 
-    try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        setTimeout(function() {
-          var sp = new SpeechSynthesisUtterance("ফোনপে তে " + amt + " টাকা সফলভাবে দেওয়া হয়েছে");
-          sp.volume = 1;
-          sp.rate = 0.95;
-          sp.lang = 'bn-BD';
-          window.speechSynthesis.speak(sp);
-        }, 300);
+    window.showAlert = function(title, text) {
+      triggerVibration(50);
+      document.getElementById('alertTitle').innerText = title;
+      document.getElementById('alertMessage').innerText = text;
+      document.getElementById('alertModal').style.display = 'flex';
+    };
+
+    window.closeModal = function(id) {
+      triggerVibration(30);
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+      if (id === 'cameraModal') window.stopLiveCamera();
+    };
+
+    window.checkBalanceAlert = function() {
+      window.showAlert("Bank Balance", "State Bank of India •••• 5424\nউপলব্ধ ব্যালেন্স: ₹" + myBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
+    };
+
+    window.openProfilePicker = function() {
+      triggerVibration(40);
+      document.getElementById('profilePicInput').click();
+    };
+
+    window.saveProfilePic = function(input) {
+      if (input && input.files && input.files[0]) {
+        var r = new FileReader();
+        r.onload = function(e) {
+          var base64 = e.target.result;
+          try { localStorage.setItem('phonepe_user_pic', base64); } catch(err){}
+          window.displayAvatar(base64);
+        };
+        r.readAsDataURL(input.files[0]);
       }
-    } catch(e){}
-  }
+    };
 
-  // ৩. ট্রান্সফার বাটন লজিক
-  function openSendMoney(title, ph) {
-    document.getElementById('payModalTitle').innerText = 'Transfer to ' + title;
-    document.getElementById('payeeDetails').value = '';
-    document.getElementById('payeeDetails').placeholder = ph;
-    document.getElementById('payAmount').value = '';
-    document.getElementById('paymentModal').style.display = 'flex';
-  }
+    window.displayAvatar = function(url) {
+      var img = document.getElementById('avatarImg');
+      var txt = document.getElementById('avatarText');
+      if (img && txt) {
+        img.src = url;
+        img.style.display = 'block';
+        txt.style.display = 'none';
+      }
+    };
 
-  function showBalanceAlert() {
-    alert("State Bank of India •••• 5424\nউপলব্ধ ব্যালেন্স: ₹" + myBalance.toFixed(2));
-  }
+    /* ===== লাইভ ক্যামেরা ও QR ডিকোড ইঞ্জিন ===== */
+    window.startLiveCamera = function() {
+      triggerVibration(40);
+      document.getElementById('cameraModal').style.display = 'flex';
+      var video = document.getElementById('videoView');
+      var notice = document.getElementById('cameraNotice');
+      notice.style.display = 'block';
+      notice.innerText = "ক্যামেরা অন হচ্ছে...";
 
-  // ৪. ক্যামেরা ও গ্যালারি স্ক্যান
-  function openQRScanner() {
-    document.getElementById('scannerModal').style.display = 'flex';
-    var video = document.getElementById('video');
-    try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(function(s) {
-          camStream = s;
-          video.srcObject = s;
+        navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        })
+        .then(function(stream) {
+          streamTrack = stream;
+          video.srcObject = stream;
           video.setAttribute('playsinline', true);
           video.play();
+          notice.style.display = 'none';
           isScanning = true;
-          requestAnimationFrame(scanLoop);
-        }).catch(function(e){});
+          requestAnimationFrame(scanVideoFrame);
+        })
+        .catch(function(err) {
+          notice.innerText = "ক্যামেরা পারমিশন পাওয়া যায়নি। গ্যালারি দিয়ে চেষ্টা করুন।";
+        });
+      } else {
+        notice.innerText = "এই ব্রাউজারে ক্যামেরা পারমিশন নেই।";
       }
-    } catch(e){}
-  }
+    };
 
-  function scanLoop() {
-    if (!isScanning) return;
-    var video = document.getElementById('video');
-    var canvas = document.getElementById('canvas');
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.height = video.videoHeight;
-      canvas.width = video.videoWidth;
+    function scanVideoFrame() {
+      if (!isScanning) return;
+      var video = document.getElementById('videoView');
+      var canvas = document.getElementById('hiddenCanvas');
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      if (window.jsQR) {
-        var code = jsQR(imgData.data, imgData.width, imgData.height);
-        if (code) {
-          closeQRScanner();
-          fillQRData(code.data);
-          return;
+
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // jsQR লাইব্রেরি দিয়ে ফ্রেম স্ক্যান
+        if (typeof jsQR !== 'undefined') {
+          var code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert"
+          });
+
+          if (code && code.data) {
+            triggerVibration([80, 50, 80]);
+            window.stopLiveCamera();
+            window.parseAndFillQR(code.data);
+            return;
+          }
         }
       }
+      requestAnimationFrame(scanVideoFrame);
     }
-    requestAnimationFrame(scanLoop);
-  }
 
-  function closeQRScanner() {
-    isScanning = false;
-    if (camStream) {
-      camStream.getTracks().forEach(function(t){ t.stop(); });
-    }
-    document.getElementById('scannerModal').style.display = 'none';
-  }
+    window.stopLiveCamera = function() {
+      isScanning = false;
+      if (streamTrack) {
+        try {
+          streamTrack.getTracks().forEach(function(t) { t.stop(); });
+        } catch(e){}
+        streamTrack = null;
+      }
+      document.getElementById('cameraModal').style.display = 'none';
+    };
 
-  function scanFromGalleryFile(input) {
-    if (input.files && input.files[0]) {
-      var r = new FileReader();
-      r.onload = function(e) {
+    /* ===== গ্যালারি থেকে QR স্ক্যান করা ===== */
+    window.openGalleryPicker = function() {
+      triggerVibration(40);
+      document.getElementById('galleryInput').click();
+    };
+
+    window.handleGalleryQR = function(input) {
+      if (!input || !input.files || !input.files[0]) return;
+      var file = input.files[0];
+      var reader = new FileReader();
+
+      reader.onload = function(e) {
         var img = new Image();
         img.onload = function() {
-          var canvas = document.createElement('canvas');
+          var canvas = document.getElementById('hiddenCanvas');
+          var ctx = canvas.getContext('2d');
           canvas.width = img.width;
           canvas.height = img.height;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          if (window.jsQR) {
-            var code = jsQR(imgData.data, imgData.width, imgData.height);
-            if (code) {
-              closeQRScanner();
-              fillQRData(code.data);
-            } else {
-              alert("QR কোড পড়া যায়নি! পরিষ্কার ছবি দিন।");
-            }
-          }
-        };
-        img.src = e.target.result;
-      };
-      r.readAsDataURL(input.files[0]);
-    }
-  }
+          ctx.drawImage(img, 0, 0, img.width, img.height);
+          var imageData = ctx.getImageData(0, 0, img.width, img.height);
 
-  function fillQRData(text) {
-    var payee = "Scanned Merchant";
-    var amt = "";
-    if (text.indexOf("upi://pay") !== -1) {
-      var query = text.split("?")[1] || "";
-      var params = new URLSearchParams(query);
-      payee = params.get('pn') ? decodeURIComponent(params.get('pn')) : (params.get('pa') || payee);
-      amt = params.get('am') || "";
-    } else {
-      payee = text.substring(0, 25);
-    }
-    document.getElementById('payModalTitle').innerText = 'Pay Scanned QR';
-    document.getElementById('payeeDetails').value = payee;
-    document.getElementById('payAmount').value = amt;
-    document.getElementById('paymentModal').style.display = 'flex';
-  }
-
-  // ৫. পেমেন্ট সাবমিট
-  function submitPayment() {
-    var name = document.getElementById('payeeDetails').value.trim();
-    var amt = parseFloat(document.getElementById('payAmount').value);
-
-    if (!name) { alert("নাম বা UPI দিন"); return; }
-    if (isNaN(amt) || amt <= 0) { alert("টাকার সঠিক পরিমাণ দিন"); return; }
-    if (amt > myBalance) { alert("ব্যালেন্স নেই!"); return; }
-
-    myBalance -= amt;
-    document.getElementById('walletBal').innerText = '₹' + myBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-    document.getElementById('paymentModal').style.display = 'none';
-
-    makeLoudSound(amt);
-
-    var list = document.getElementById('historyList');
-    var time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    var item = document.createElement('div');
-    item.className = 'txn-item';
-    item.innerHTML = '<div><div class="txn-title">Paid to ' + name + '</div><div class="txn-time">State Bank • Today, ' + time + '</div></div><div class="txn-amount txn-red">-₹' + amt.toFixed(2) + '</div>';
-    list.prepend(item);
-
-    document.getElementById('receiptAmount').innerText = '₹' + amt.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-    document.getElementById('receiptPayee').innerText = 'Paid to ' + name;
-    document.getElementById('receiptTxnId').innerText = 'T' + Math.floor(100000000000 + Math.random() * 900000000000);
-    document.getElementById('receiptTime').innerText = time;
-    document.getElementById('successScreen').style.display = 'flex';
-  }
-
-  try {
-    var savedP = localStorage.getItem('p_pic');
-    if (savedP) applyPic(savedP);
-  } catch(e){}
-</script>
+          if (typeof jsQR !== 'undefined') {
+         
